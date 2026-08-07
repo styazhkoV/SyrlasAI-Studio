@@ -1,41 +1,49 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using SyrlasAIEngine.Database;
+using SyrlasAIEngine.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// Жесткая привязка Kestrel к локальному порту 5000 (без HTTPS для локального IPC)
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenLocalhost(5000);
+});
+
+// Добавляем сервисы
+builder.Services.AddControllers();
+builder.Services.AddSingleton<RagService>();
+
+// Регистрируем DatabaseInitializer, PromptFactory и AgentService
+var dbInitializer = new DatabaseInitializer();
+builder.Services.AddSingleton(dbInitializer);
+builder.Services.AddSingleton<PromptFactory>();
+builder.Services.AddSingleton<AgentService>();
+builder.Services.AddSingleton<IDocumentParser, CodeFileParser>();
+builder.Services.AddSingleton<IDocumentParser, OpenXmlOfficeParser>();
+builder.Services.AddSingleton<IDocumentParser, PdfPigParser>();
+
+// CORS (разрешаем запросы от Electron/Vite)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowElectron", policy =>
+    {
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+// Инициализация базы данных при старте приложения
+await dbInitializer.InitializeAsync();
 
-app.UseHttpsRedirection();
+app.UseCors("AllowElectron");
+app.MapControllers();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+// Тестовый эндпоинт для проверки связи
+app.MapGet("/api/health", () => Results.Ok(new { Status = "Syrlas AI Engine is running" }));
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
