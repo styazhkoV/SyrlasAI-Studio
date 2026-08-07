@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Dapper;
 using Microsoft.Data.Sqlite;
 using SyrlasAIEngine.Database;
 using SyrlasAIEngine.Models;
@@ -14,100 +12,98 @@ namespace SyrlasAIEngine.Services
 {
     public class RagService
     {
-        private readonly DatabaseInitializer _dbInit;
+        private readonly DatabaseInitializer _dbInitializer;
         private readonly IEnumerable<IDocumentParser> _parsers;
 
-        public RagService(DatabaseInitializer dbInit, IEnumerable<IDocumentParser> parsers)
+        public RagService(DatabaseInitializer dbInitializer, IEnumerable<IDocumentParser> parsers)
         {
-            _dbInit = dbInit;
+            _dbInitializer = dbInitializer;
             _parsers = parsers;
         }
 
-        private SqliteConnection GetConnection() => new SqliteConnection(_dbInit.GetConnectionString());
-
-        public async Task<UploadArtifactResponse> ProcessAndIndexFileAsync(Stream fileStream, string fileName, string? sessionId)
+        // Индексация загруженного файла
+        public async Task ProcessAndIndexFileAsync(Stream stream, string fileName, string? fileCategory = null)
         {
-            string ext = Path.GetExtension(fileName).ToLowerInvariant();
+            string ext = Path.GetExtension(fileName);
             var parser = _parsers.FirstOrDefault(p => p.SupportsExtension(ext));
 
             if (parser == null)
-            {
-                throw new NotSupportedException($"Расширение файла '{ext}' не поддерживается для RAG индексации.");
-            }
+                throw new NotSupportedException($"Формат файла {ext} не поддерживается.");
 
-            // Вычисляем SHA-256 хэш файла
-            fileStream.Position = 0;
-            using var sha256 = SHA256.Create();
-            byte[] hashBytes = await sha256.ComputeHashAsync(fileStream);
-            string fileHash = Convert.ToHexString(hashBytes);
+            var chunks = await parser.ParseAsync(stream, fileName);
 
-            fileStream.Position = 0;
-            var chunks = (await parser.ParseAsync(fileStream, fileName)).ToList();
+            using var connection = new SqliteConnection(_dbInitializer.ConnectionString);
+            await connection.OpenAsync();
 
-            using var conn = GetConnection();
-            await conn.OpenAsync();
-            using var transaction = conn.BeginTransaction();
-
-            string artifactId = Guid.NewGuid().ToString();
-            string fileType = GetFileTypeByExtension(ext);
-
-            // 1. Вставляем запись в таблицу artifacts
-            await conn.ExecuteAsync(@"
-                INSERT INTO artifacts (id, session_id, file_name, file_path, file_extension, file_type, file_hash, file_size_bytes, status)
-                VALUES (@id, @sessionId, @fileName, @filePath, @ext, @fileType, @fileHash, @fileSize, 'INDEXED')",
-                new {
-                    id = artifactId,
-                    sessionId,
-                    fileName,
-                    filePath = fileName,
-                    ext,
-                    fileType,
-                    fileHash,
-                    fileSize = fileStream.Length
-                }, transaction);
-
-            // 2. Индексируем чанки в document_chunks и document_chunks_fts
+            using var transaction = connection.BeginTransaction();
             foreach (var chunk in chunks)
             {
-                string chunkId = Guid.NewGuid().ToString();
+                var command = connection.CreateCommand();
+                command.Transaction = transaction;
+                command.CommandText = @"
+                    INSERT INTO document_chunks (chunk_index, content, metadata_json, token_count)
+                    VALUES (@chunkIndex, @content, @metadataJson, @tokenCount);";
 
-                await conn.ExecuteAsync(@"
-                    INSERT INTO document_chunks (id, artifact_id, chunk_index, content, metadata_json, token_count)
-                    VALUES (@id, @artifactId, @chunkIndex, @content, @metadataJson, @tokenCount)",
-                    new {
-                        id = chunkId,
-                        artifactId,
-                        chunkIndex = chunk.ChunkIndex,
-                        content = chunk.Content,
-                        metadataJson = chunk.MetadataJson,
-                        tokenCount = chunk.TokenCount
-                    }, transaction);
+                command.Parameters.AddWithValue("@chunkIndex", chunk.ChunkIndex);
+                command.Parameters.AddWithValue("@content", chunk.Content);
+                command.Parameters.AddWithValue("@metadataJson", chunk.MetadataJson ?? string.Empty);
+                command.Parameters.AddWithValue("@tokenCount", chunk.TokenCount);
 
-                // Заполняем FTS5 Таблицу для полнотекстового поиска
-                await conn.ExecuteAsync(@"
-                    INSERT INTO document_chunks_fts (chunk_id, content, metadata_json)
-                    VALUES (@chunkId, @content, @metadataJson)",
-                    new { chunkId, content = chunk.Content, metadataJson = chunk.MetadataJson }, transaction);
+                await command.ExecuteNonQueryAsync();
             }
-
-            transaction.Commit();
-
-            return new UploadArtifactResponse
-            {
-                ArtifactId = artifactId,
-                FileName = fileName,
-                TotalChunks = chunks.Count,
-                Status = "INDEXED"
-            };
+            await transaction.CommitAsync();
         }
 
-        private static string GetFileTypeByExtension(string ext) => ext switch
+        // Поиск контекста по ключевым словам
+        public async Task<string> SearchContextAsync(string query, int limit = 3)
         {
-            ".cs" or ".java" or ".ts" or ".js" or ".py" or ".sql" => "CODE",
-            ".docx" => "OFFICE_DOC",
-            ".xlsx" => "EXCEL",
-            ".pdf" => "PDF",
-            _ => "SPECIFICATION"
-        };
+            if (string.IsNullOrWhiteSpace(query))
+                return string.Empty;
+
+            var results = new List<string>();
+            var keywords = query.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                .Where(k => k.Length > 2)
+                                .Take(5)
+                                .ToList();
+
+            using var connection = new SqliteConnection(_dbInitializer.ConnectionString);
+            await connection.OpenAsync();
+
+            var command = connection.CreateCommand();
+
+            if (keywords.Count > 0)
+            {
+                var whereClauses = new List<string>();
+                for (int i = 0; i < keywords.Count; i++)
+                {
+                    string paramName = $"@kw{i}";
+                    whereClauses.Add($"content LIKE {paramName}");
+                    command.Parameters.AddWithValue(paramName, $"%{keywords[i]}%");
+                }
+
+                command.CommandText = $@"
+                    SELECT content 
+                    FROM document_chunks 
+                    WHERE {string.Join(" OR ", whereClauses)}
+                    LIMIT @limit;";
+            }
+            else
+            {
+                command.CommandText = @"
+                    SELECT content 
+                    FROM document_chunks 
+                    LIMIT @limit;";
+            }
+
+            command.Parameters.AddWithValue("@limit", limit);
+
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                results.Add(reader.GetString(0));
+            }
+
+            return string.Join("\n---\n", results);
+        }
     }
 }

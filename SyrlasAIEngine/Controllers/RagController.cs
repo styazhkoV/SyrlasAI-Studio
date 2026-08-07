@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SyrlasAIEngine.Services;
-using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace SyrlasAIEngine.Controllers
@@ -18,25 +18,16 @@ namespace SyrlasAIEngine.Controllers
         }
 
         [HttpPost("upload")]
-        public async Task<IActionResult> UploadDocument(IFormFile file, [FromQuery] string? sessionId)
+        public async Task<IActionResult> UploadFile(IFormFile file)
         {
             if (file == null || file.Length == 0)
-                return BadRequest("Файл не передан или пуст.");
+                return BadRequest("Файл не загружен.");
 
-            try
-            {
-                using var stream = file.OpenReadStream();
-                var result = await _ragService.ProcessAndIndexFileAsync(stream, file.FileName, sessionId);
-                return Ok(result);
-            }
-            catch (NotSupportedException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Ошибка при обработке документа: {ex.Message}");
-            }
+            using var stream = file.OpenReadStream();
+            await _ragService.ProcessAndIndexFileAsync(stream, file.FileName); 
+            // исправлено: теперь передаём Stream + FileName
+
+            return Ok(new { message = $"Файл {file.FileName} успешно обработан и проиндексирован." });
         }
     }
 }

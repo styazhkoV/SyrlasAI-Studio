@@ -48,6 +48,18 @@
               "target": "Package",
               "version": "[2.1.79, )"
             },
+            "DocumentFormat.OpenXml": {
+              "target": "Package",
+              "version": "[3.5.1, )"
+            },
+            "LLamaSharp": {
+              "target": "Package",
+              "version": "[0.27.0, )"
+            },
+            "LLamaSharp.Backend.Cpu": {
+              "target": "Package",
+              "version": "[0.27.0, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[9.0.18, )"
@@ -55,6 +67,10 @@
             "Microsoft.Data.Sqlite": {
               "target": "Package",
               "version": "[10.0.10, )"
+            },
+            "PdfPig": {
+              "target": "Package",
+              "version": "[0.1.15, )"
             }
           },
           "imports": [

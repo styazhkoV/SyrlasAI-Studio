@@ -1,41 +1,41 @@
-using Microsoft.AspNetCore.Mvc;
-using SyrlasAIEngine.Models;
-using SyrlasAIEngine.Services;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using SyrlasAIEngine.Services;
 
 namespace SyrlasAIEngine.Controllers
 {
+    public record AgentRequestDto(
+        AgentRole Role, 
+        string Prompt, 
+        bool UseRag = true
+    );
+
     [ApiController]
     [Route("api/[controller]")]
     public class AgentController : ControllerBase
     {
         private readonly AgentService _agentService;
-        private readonly PromptFactory _promptFactory;
 
-        public AgentController(AgentService agentService, PromptFactory promptFactory)
+        public AgentController(AgentService agentService)
         {
             _agentService = agentService;
-            _promptFactory = promptFactory;
         }
 
-        [HttpGet("roles")]
-        public IActionResult GetRoles()
+        [HttpPost("stream")]
+        public async Task StreamAgentResponse([FromBody] AgentRequestDto request, CancellationToken cancellationToken)
         {
-            return Ok(_promptFactory.GetAllProfiles());
-        }
+            Response.ContentType = "text/plain; charset=utf-8";
 
-        [HttpPost("switch")]
-        public async Task<IActionResult> SwitchRole([FromBody] SwitchRoleRequest req)
-        {
-            await _agentService.SwitchRoleAsync(req.SessionId, req.Role);
-            return Ok(new { Status = "Role switched successfully", ActiveRole = req.Role });
-        }
-
-        [HttpPost("chat")]
-        public async Task<IActionResult> Chat([FromBody] ChatRequest req)
-        {
-            var response = await _agentService.ProcessChatAsync(req);
-            return Ok(response);
+            await foreach (var token in _agentService.ExecuteTaskAsync(
+                request.Role, 
+                request.Prompt, 
+                request.UseRag, 
+                cancellationToken))
+            {
+                await Response.WriteAsync(token, cancellationToken);
+                await Response.Body.FlushAsync(cancellationToken);
+            }
         }
     }
 }

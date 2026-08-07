@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using SyrlasAIEngine.Models;
 using SyrlasAIEngine.Services;
 using System.Threading.Tasks;
 
@@ -16,11 +15,26 @@ namespace SyrlasAIEngine.Controllers
             _agentService = agentService;
         }
 
-        [HttpPost("artifact")]
-        public async Task<IActionResult> SaveArtifact([FromBody] SaveArtifactRequest req)
+        public class SaveArtifactRequest
         {
-            await _agentService.SaveArtifactAsync(req);
-            return Ok(new { Status = "Artifact saved as context successfully" });
+            public required string Title { get; set; }
+            public required string Content { get; set; }
+            public required string Type { get; set; }
+        }
+
+
+        [HttpPost("artifact")]
+        public async Task<IActionResult> SaveArtifact([FromBody] SaveArtifactRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Title) || 
+                string.IsNullOrWhiteSpace(request.Content) || 
+                string.IsNullOrWhiteSpace(request.Type))
+            {
+                return BadRequest("Title, Content и Type обязательны.");
+            }
+
+            await _agentService.SaveArtifactAsync(request.Title, request.Content, request.Type);
+            return Ok(new { message = "Артефакт сохранён" });
         }
     }
 }

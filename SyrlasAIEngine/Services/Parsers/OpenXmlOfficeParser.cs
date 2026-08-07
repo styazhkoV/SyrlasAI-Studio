@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -36,7 +37,9 @@ namespace SyrlasAIEngine.Services.Parsers
         {
             var chunks = new List<DocumentChunkDto>();
             using var doc = WordprocessingDocument.Open(stream, false);
-            var body = doc.MainDocumentPart?.Document.Body;
+            
+            // Безопасное обращение к Body через ?.
+            var body = doc.MainDocumentPart?.Document?.Body;
             if (body == null) return chunks;
 
             int index = 0;
@@ -68,13 +71,17 @@ namespace SyrlasAIEngine.Services.Parsers
             var chunks = new List<DocumentChunkDto>();
             using var doc = SpreadsheetDocument.Open(stream, false);
             var workbookPart = doc.WorkbookPart;
-            if (workbookPart == null) return chunks;
+            if (workbookPart?.Workbook?.Sheets == null) return chunks;
 
             int index = 0;
-            foreach (var sheet in workbookPart.Workbook.Sheets?.Elements<Sheet>() ?? Array.Empty<Sheet>())
+            foreach (var sheet in workbookPart.Workbook.Sheets.Elements<Sheet>())
             {
-                var worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id!);
-                var sheetData = worksheetPart.Worksheet.Elements<SheetData>().SystemOrDefault();
+                if (sheet.Id?.Value == null) continue;
+
+                // Безопасное приведение и проверка наличия Worksheet
+                if (workbookPart.GetPartById(sheet.Id.Value!) is not WorksheetPart worksheetPart) continue;
+                
+                var sheetData = worksheetPart.Worksheet?.Elements<SheetData>().FirstOrDefault();
                 if (sheetData == null) continue;
 
                 var sb = new StringBuilder();
