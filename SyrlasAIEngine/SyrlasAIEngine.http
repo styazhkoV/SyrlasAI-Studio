@@ -1,0 +1,6 @@
+@SyrlasAIEngine_HostAddress = http://localhost:5112
+
+GET {{SyrlasAIEngine_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
