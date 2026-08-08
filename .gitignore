@@ -1,0 +1,71 @@
+# --- Общие ---
+*.log
+*.lock
+*.tmp
+*.bak
+*.swp
+
+# --- Windows ---
+Thumbs.db
+Desktop.ini
+
+# --- .NET / Visual Studio ---
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.pdb
+*.mdb
+*.ilk
+*.idb
+*.tlog
+*.lastbuildstate
+*.dbmdl
+*.jfm
+*.aps
+*.ncb
+*.opendb
+*.VC.db
+*.vscode/
+
+# --- NuGet ---
+*.nupkg
+*.snupkg
+project.lock.json
+project.assets.json
+*.nuget.props
+*.nuget.targets
+packages/
+
+# --- Entity Framework ---
+Migrations/obj/
+*.db
+*.sqlite
+*.mdf
+*.ldf
+
+# --- Electron / Node.js ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+build/
+electron-builder.yml
+*.asar
+
+# --- AI модели / большие файлы ---
+*.gguf
+*.onnx
+*.pt
+*.h5
+*.ckpt
+
+# --- IDE ---
+.vscode/
+.idea/
+*.iml
+
+# --- OS ---
+.DS_Store
