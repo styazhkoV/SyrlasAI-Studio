@@ -66,6 +66,13 @@ electron-builder.yml
 .vscode/
 .idea/
 *.iml
+# MAUI специфические
+*.apk
+*.aab
+*.app
+*.ipa
+*.xcarchive
+
 
 # --- OS ---
 .DS_Store
