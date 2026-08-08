@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "DFTQjOhGjP0=",
+  "dgSpecHash": "nAO08y02PD8=",
   "success": true,
   "projectFilePath": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasStudio\\SyrlasStudio.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\alexs\\.nuget\\packages\\communitytoolkit.mvvm\\8.4.2\\communitytoolkit.mvvm.8.4.2.nupkg.sha512",
     "C:\\Users\\alexs\\.nuget\\packages\\googlegson\\2.13.0.1\\googlegson.2.13.0.1.nupkg.sha512",
     "C:\\Users\\alexs\\.nuget\\packages\\microsoft.extensions.configuration\\9.0.9\\microsoft.extensions.configuration.9.0.9.nupkg.sha512",
     "C:\\Users\\alexs\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\9.0.9\\microsoft.extensions.configuration.abstractions.9.0.9.nupkg.sha512",
