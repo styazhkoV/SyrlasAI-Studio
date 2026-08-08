@@ -9,29 +9,28 @@
 Thumbs.db
 Desktop.ini
 
-# --- .NET / Visual Studio ---
+# --- .NET / Visual Studio / MAUI ---
 bin/
 obj/
+*.pdb
+*.dll
+*.exe
 *.user
 *.suo
 *.cache
-*.pdb
-*.mdb
-*.ilk
-*.idb
-*.tlog
-*.lastbuildstate
 *.dbmdl
-*.jfm
 *.aps
 *.ncb
-*.opendb
 *.VC.db
 *.vscode/
+*.appx
+*.msix
+*.msixupload
 
 # --- NuGet ---
 *.nupkg
 *.snupkg
+*.nuspec
 project.lock.json
 project.assets.json
 *.nuget.props
@@ -45,7 +44,7 @@ Migrations/obj/
 *.mdf
 *.ldf
 
-# --- Electron / Node.js ---
+# --- Node.js / Electron ---
 node_modules/
 npm-debug.log*
 yarn-debug.log*
@@ -61,18 +60,13 @@ electron-builder.yml
 *.pt
 *.h5
 *.ckpt
+*.so
+*.dylib
 
 # --- IDE ---
 .vscode/
 .idea/
 *.iml
-# MAUI специфические
-*.apk
-*.aab
-*.app
-*.ipa
-*.xcarchive
-
 
 # --- OS ---
 .DS_Store

@@ -1,19 +1,27 @@
-namespace SyrlasAIEngine.Services;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
+using SyrlasAIEngine.Services;
+
+namespace SyrlasStudio.Services;
 
 public class AgentService
 {
-    /// <summary>
-    /// Генерация ответа в виде потока токенов (IAsyncEnumerable)
-    /// </summary>
-    public async IAsyncEnumerable<string> GenerateResponseStreamAsync(string userPrompt)
-    {
-        string mockResponse = $"Принял запрос: \"{userPrompt}\".\n\nВот предложенная реализация:\n\n```csharp\npublic class SyrlasEngineCore\n{{\n    public static void Initialize()\n    {{\n        Console.WriteLine(\"Syrlas AI Engine Active\");\n    }}\n}}\n```";
+    private readonly LlamaInferenceService _inferenceService;
 
-        string[] words = mockResponse.Split(' ');
-        foreach (var word in words)
+    public AgentService(LlamaInferenceService inferenceService)
+    {
+        _inferenceService = inferenceService;
+    }
+
+    public async IAsyncEnumerable<string> GenerateResponseAsync(
+        string prompt, 
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        await foreach (var token in _inferenceService.GenerateResponseAsync(prompt, cancellationToken))
         {
-            await Task.Delay(30);
-            yield return word + " ";
+            yield return token;
         }
     }
 }

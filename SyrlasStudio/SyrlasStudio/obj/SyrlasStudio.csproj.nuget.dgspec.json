@@ -44,6 +44,16 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
+          "dependencies": {
+            "LLamaSharp": {
+              "target": "Package",
+              "version": "[0.27.0, )"
+            },
+            "LLamaSharp.Backend.Cuda12": {
+              "target": "Package",
+              "version": "[0.27.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -73,14 +83,10 @@
         "packagesPath": "C:\\Users\\alexs\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasStudio\\obj\\",
         "projectStyle": "PackageReference",
-        "crossTargeting": true,
         "configFilePaths": [
           "C:\\Users\\alexs\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net9.0-android",
-          "net9.0-ios",
-          "net9.0-maccatalyst",
           "net9.0-windows10.0.19041.0"
         ],
         "sources": {
@@ -88,30 +94,6 @@
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net9.0-android35.0": {
-            "targetAlias": "net9.0-android",
-            "projectReferences": {
-              "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj": {
-                "projectPath": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj"
-              }
-            }
-          },
-          "net9.0-ios26.5": {
-            "targetAlias": "net9.0-ios",
-            "projectReferences": {
-              "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj": {
-                "projectPath": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj"
-              }
-            }
-          },
-          "net9.0-maccatalyst26.5": {
-            "targetAlias": "net9.0-maccatalyst",
-            "projectReferences": {
-              "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj": {
-                "projectPath": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj"
-              }
-            }
-          },
           "net9.0-windows10.0.19041": {
             "targetAlias": "net9.0-windows10.0.19041.0",
             "projectReferences": {
@@ -134,136 +116,6 @@
         "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
-        "net9.0-android35.0": {
-          "targetAlias": "net9.0-android",
-          "dependencies": {
-            "CommunityToolkit.Mvvm": {
-              "target": "Package",
-              "version": "[8.4.2, )"
-            },
-            "Microsoft.Extensions.Logging.Debug": {
-              "target": "Package",
-              "version": "[9.0.9, )"
-            },
-            "Microsoft.Maui.Controls": {
-              "target": "Package",
-              "version": "[9.0.120, )"
-            },
-            "Microsoft.NET.ILLink.Tasks": {
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[9.0.18, )",
-              "autoReferenced": true
-            }
-          },
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48",
-            "net481"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.Android": {
-              "privateAssets": "all"
-            },
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.316/PortableRuntimeIdentifierGraph.json"
-        },
-        "net9.0-ios26.5": {
-          "targetAlias": "net9.0-ios",
-          "dependencies": {
-            "CommunityToolkit.Mvvm": {
-              "target": "Package",
-              "version": "[8.4.2, )"
-            },
-            "Microsoft.Extensions.Logging.Debug": {
-              "target": "Package",
-              "version": "[9.0.9, )"
-            },
-            "Microsoft.Maui.Controls": {
-              "target": "Package",
-              "version": "[9.0.120, )"
-            },
-            "Microsoft.NET.ILLink.Tasks": {
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[9.0.18, )",
-              "autoReferenced": true
-            }
-          },
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48",
-            "net481"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.iOS": {
-              "privateAssets": "all"
-            },
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.316/PortableRuntimeIdentifierGraph.json"
-        },
-        "net9.0-maccatalyst26.5": {
-          "targetAlias": "net9.0-maccatalyst",
-          "dependencies": {
-            "CommunityToolkit.Mvvm": {
-              "target": "Package",
-              "version": "[8.4.2, )"
-            },
-            "Microsoft.Extensions.Logging.Debug": {
-              "target": "Package",
-              "version": "[9.0.9, )"
-            },
-            "Microsoft.Maui.Controls": {
-              "target": "Package",
-              "version": "[9.0.120, )"
-            },
-            "Microsoft.NET.ILLink.Tasks": {
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[9.0.18, )",
-              "autoReferenced": true
-            }
-          },
-          "imports": [
-            "xamarinios10",
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48",
-            "net481"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.MacCatalyst": {
-              "privateAssets": "all"
-            },
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.316/PortableRuntimeIdentifierGraph.json"
-        },
         "net9.0-windows10.0.19041": {
           "targetAlias": "net9.0-windows10.0.19041.0",
           "dependencies": {
@@ -309,18 +161,6 @@
         }
       },
       "runtimes": {
-        "android-arm64": {
-          "#import": []
-        },
-        "android-x64": {
-          "#import": []
-        },
-        "iossimulator-x64": {
-          "#import": []
-        },
-        "maccatalyst-x64": {
-          "#import": []
-        },
         "win10-x64": {
           "#import": []
         }

@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿global using SyrlasAIEngine.Services;
+using Microsoft.Extensions.Logging;
 using SyrlasStudio.ViewModels;
-using SyrlasAIEngine.Services;
+using SyrlasStudio.Services;
+using SyrlasAIEngine;
 
 namespace SyrlasStudio;
 
@@ -17,14 +19,18 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        // Регистрация сервисов и ViewModel
-        builder.Services.AddSingleton<AgentService>();
-        builder.Services.AddTransient<MainPageViewModel>();
-        builder.Services.AddTransient<MainPage>();
-
 #if DEBUG
         builder.Logging.AddDebug();
+        System.Diagnostics.Debugger.Launch();
 #endif
+
+        // Регистрация сервисов
+        builder.Services.AddSingleton<LlamaInferenceService>();
+        builder.Services.AddSingleton<AgentService>();
+
+        // Регистрация ViewModel и страниц
+        builder.Services.AddTransient<MainPageViewModel>();
+        builder.Services.AddTransient<MainPage>();
 
         return builder.Build();
     }

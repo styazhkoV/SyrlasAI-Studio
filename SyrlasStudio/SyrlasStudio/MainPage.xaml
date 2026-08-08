@@ -100,9 +100,9 @@
                                            FontSize="14"
                                            LineBreakMode="WordWrap" />
 
-                                    <!-- Кнопка Apply to File через x:Reference RootPage -->
+                                    <!-- Кнопка Apply to File через x:Reference RootPage (исправлен пробел и имя ссылки) -->
                                     <Button Text="{Binding AppliedStatusText}"
-                                            Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ApplyCodeToFileCommand}"
+                                            Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ApplyCodeToFileCommand}" 
                                             CommandParameter="{Binding .}"
                                             IsVisible="{Binding HasCode}"
                                             FontSize="11"

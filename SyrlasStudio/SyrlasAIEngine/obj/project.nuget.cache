@@ -1,8 +1,28 @@
 {
   "version": 2,
-  "dgSpecHash": "io338CD4GoA=",
+  "dgSpecHash": "vwDlthr+xQA=",
   "success": true,
   "projectFilePath": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\alexs\\.nuget\\packages\\communitytoolkit.highperformance\\8.4.2\\communitytoolkit.highperformance.8.4.2.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\llamasharp\\0.27.0\\llamasharp.0.27.0.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\llamasharp.backend.cpu\\0.27.0\\llamasharp.backend.cpu.0.27.0.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\llamasharp.backend.cuda12\\0.27.0\\llamasharp.backend.cuda12.0.27.0.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\llamasharp.backend.cuda12.linux\\0.27.0\\llamasharp.backend.cuda12.linux.0.27.0.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\llamasharp.backend.cuda12.windows\\0.27.0\\llamasharp.backend.cuda12.windows.0.27.0.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\10.0.5\\microsoft.bcl.asyncinterfaces.10.0.5.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\microsoft.bcl.memory\\10.0.5\\microsoft.bcl.memory.10.0.5.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\microsoft.extensions.ai.abstractions\\10.4.1\\microsoft.extensions.ai.abstractions.10.4.1.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\10.0.5\\microsoft.extensions.dependencyinjection.abstractions.10.0.5.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\10.0.5\\microsoft.extensions.logging.abstractions.10.0.5.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\system.diagnostics.diagnosticsource\\10.0.5\\system.diagnostics.diagnosticsource.10.0.5.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\system.interactive.async\\7.0.0\\system.interactive.async.7.0.0.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\system.io.pipelines\\10.0.4\\system.io.pipelines.10.0.4.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\system.linq.async\\7.0.0\\system.linq.async.7.0.0.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\system.linq.asyncenumerable\\10.0.2\\system.linq.asyncenumerable.10.0.2.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\system.numerics.tensors\\10.0.5\\system.numerics.tensors.10.0.5.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\system.text.encodings.web\\10.0.4\\system.text.encodings.web.10.0.4.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\system.text.json\\10.0.4\\system.text.json.10.0.4.nupkg.sha512"
+  ],
   "logs": []
 }
