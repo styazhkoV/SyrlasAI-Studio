@@ -46,4 +46,5 @@ namespace SyrlasAIEngine.Models
         public AgentRole Role { get; set; }
         public string Response { get; set; } = string.Empty;
     }
+    
 }

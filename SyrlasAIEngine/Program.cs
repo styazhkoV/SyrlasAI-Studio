@@ -1,55 +1,50 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SyrlasAIEngine.Database;
-using SyrlasAIEngine.Services;
-using SyrlasAIEngine.Services.Parsers;
+using SyrlasAIEngine.Services; // <-- добавь это пространство имён
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenLocalhost(5000);
-});
-
+// Добавляем контроллеры и сервисы
 builder.Services.AddControllers();
-
-// Базовые сервисы
-var dbInitializer = new DatabaseInitializer();
-builder.Services.AddSingleton(dbInitializer);
-builder.Services.AddSingleton<PromptFactory>();
-builder.Services.AddSingleton<AgentService>();
-
-// Парсеры документов и кода
-builder.Services.AddSingleton<IDocumentParser, CodeFileParser>();
-builder.Services.AddSingleton<IDocumentParser, SourceCodeParser>(); // Поддержка C, C++, C#
-builder.Services.AddSingleton<IDocumentParser, OpenXmlOfficeParser>();
-builder.Services.AddSingleton<IDocumentParser, PdfPigParser>();
-
-// RAG и LlamaSharp Инференс
-builder.Services.AddSingleton<RagService>();
-builder.Services.AddSingleton<LlamaInferenceService>();
-
-builder.Services.AddCors(options =>
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
 {
-    options.AddPolicy("AllowElectron", policy =>
-    {
-        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-    });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "SyrlasAIEngine API", Version = "v1" });
 });
+
+// Регистрируем DbContext
+builder.Services.AddDbContext<RagDbContext>();
+
+// Регистрируем сервисы
+builder.Services.AddScoped<DatabaseInitializer>();
+builder.Services.AddScoped<AgentService>(); // <-- регистрация AgentService
+builder.Services.AddScoped<RagService>();   // <-- если RagService тоже используется
+builder.Services.AddScoped<WorkspaceService>(); // <-- если есть WorkspaceService
 
 var app = builder.Build();
 
-await dbInitializer.InitializeAsync();
+// Автоматически применяем миграции при старте
+using (var scope = app.Services.CreateScope())
+{
+    var initializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
+    await initializer.InitializeAsync();
+}
 
-app.UseCors("AllowElectron");
+// Настройка middleware
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "SyrlasAIEngine API v1");
+    });
+}
+
+app.UseHttpsRedirection();
+app.UseAuthorization();
 app.MapControllers();
-
-app.MapGet("/api/health", (LlamaInferenceService llama) => Results.Ok(new 
-{ 
-    Status = "Syrlas AI Engine is running",
-    LlamaLoaded = llama.IsLoaded
-}));
 
 app.Run();
