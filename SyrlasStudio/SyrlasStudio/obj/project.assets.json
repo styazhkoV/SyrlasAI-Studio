@@ -2309,6 +2309,16 @@
             "related": ".aar;.pdb;.xml"
           }
         }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        }
       }
     },
     "net9.0-android35.0/android-arm64": {
@@ -4618,6 +4628,16 @@
           "lib/net8.0-android34.0/Xamarin.KotlinX.Serialization.Core.Jvm.dll": {
             "related": ".aar;.pdb;.xml"
           }
+        }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
         }
       }
     },
@@ -6929,6 +6949,16 @@
             "related": ".aar;.pdb;.xml"
           }
         }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        }
       }
     },
     "net9.0-android35.0/iossimulator-x64": {
@@ -9238,6 +9268,16 @@
           "lib/net8.0-android34.0/Xamarin.KotlinX.Serialization.Core.Jvm.dll": {
             "related": ".aar;.pdb;.xml"
           }
+        }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
         }
       }
     },
@@ -11549,6 +11589,16 @@
             "related": ".aar;.pdb;.xml"
           }
         }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        }
       }
     },
     "net9.0-android35.0/win10-x64": {
@@ -13859,6 +13909,16 @@
             "related": ".aar;.pdb;.xml"
           }
         }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        }
       }
     },
     "net9.0-ios26.5": {
@@ -14276,6 +14336,16 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
         }
       }
     },
@@ -14695,6 +14765,16 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        }
       }
     },
     "net9.0-ios26.5/android-x64": {
@@ -15112,6 +15192,16 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
         }
       }
     },
@@ -15531,6 +15621,16 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        }
       }
     },
     "net9.0-ios26.5/maccatalyst-x64": {
@@ -15948,6 +16048,16 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
         }
       }
     },
@@ -16367,6 +16477,16 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        }
       }
     },
     "net9.0-maccatalyst26.5": {
@@ -16784,6 +16904,16 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
         }
       }
     },
@@ -17203,6 +17333,16 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        }
       }
     },
     "net9.0-maccatalyst26.5/android-x64": {
@@ -17620,6 +17760,16 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
         }
       }
     },
@@ -18039,6 +18189,16 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        }
       }
     },
     "net9.0-maccatalyst26.5/maccatalyst-x64": {
@@ -18457,6 +18617,16 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        }
       }
     },
     "net9.0-maccatalyst26.5/win10-x64": {
@@ -18874,6 +19044,16 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
         }
       }
     },
@@ -19544,6 +19724,16 @@
             "rid": "win-x86"
           }
         }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        }
       }
     },
     "net9.0-windows10.0.19041/android-arm64": {
@@ -20150,6 +20340,16 @@
         "build": {
           "buildTransitive/Microsoft.WindowsAppSDK.props": {},
           "buildTransitive/Microsoft.WindowsAppSDK.targets": {}
+        }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
         }
       }
     },
@@ -20758,6 +20958,16 @@
           "buildTransitive/Microsoft.WindowsAppSDK.props": {},
           "buildTransitive/Microsoft.WindowsAppSDK.targets": {}
         }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        }
       }
     },
     "net9.0-windows10.0.19041/iossimulator-x64": {
@@ -21365,6 +21575,16 @@
           "buildTransitive/Microsoft.WindowsAppSDK.props": {},
           "buildTransitive/Microsoft.WindowsAppSDK.targets": {}
         }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        }
       }
     },
     "net9.0-windows10.0.19041/maccatalyst-x64": {
@@ -21971,6 +22191,16 @@
         "build": {
           "buildTransitive/Microsoft.WindowsAppSDK.props": {},
           "buildTransitive/Microsoft.WindowsAppSDK.targets": {}
+        }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
         }
       }
     },
@@ -22588,6 +22818,16 @@
         "build": {
           "buildTransitive/Microsoft.WindowsAppSDK.props": {},
           "buildTransitive/Microsoft.WindowsAppSDK.targets": {}
+        }
+      },
+      "SyrlasAIEngine/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SyrlasAIEngine.dll": {}
         }
       }
     }
@@ -26540,6 +26780,11 @@
         "xamarin.kotlinx.serialization.core.jvm.1.7.3.4.nupkg.sha512",
         "xamarin.kotlinx.serialization.core.jvm.nuspec"
       ]
+    },
+    "SyrlasAIEngine/1.0.0": {
+      "type": "project",
+      "path": "../SyrlasAIEngine/SyrlasAIEngine.csproj",
+      "msbuildProject": "../SyrlasAIEngine/SyrlasAIEngine.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -26547,24 +26792,28 @@
       "CommunityToolkit.Mvvm >= 8.4.2",
       "Microsoft.Extensions.Logging.Debug >= 9.0.9",
       "Microsoft.Maui.Controls >= 9.0.120",
-      "Microsoft.NET.ILLink.Tasks >= 9.0.18"
+      "Microsoft.NET.ILLink.Tasks >= 9.0.18",
+      "SyrlasAIEngine >= 1.0.0"
     ],
     "net9.0-ios26.5": [
       "CommunityToolkit.Mvvm >= 8.4.2",
       "Microsoft.Extensions.Logging.Debug >= 9.0.9",
       "Microsoft.Maui.Controls >= 9.0.120",
-      "Microsoft.NET.ILLink.Tasks >= 9.0.18"
+      "Microsoft.NET.ILLink.Tasks >= 9.0.18",
+      "SyrlasAIEngine >= 1.0.0"
     ],
     "net9.0-maccatalyst26.5": [
       "CommunityToolkit.Mvvm >= 8.4.2",
       "Microsoft.Extensions.Logging.Debug >= 9.0.9",
       "Microsoft.Maui.Controls >= 9.0.120",
-      "Microsoft.NET.ILLink.Tasks >= 9.0.18"
+      "Microsoft.NET.ILLink.Tasks >= 9.0.18",
+      "SyrlasAIEngine >= 1.0.0"
     ],
     "net9.0-windows10.0.19041": [
       "CommunityToolkit.Mvvm >= 8.4.2",
       "Microsoft.Extensions.Logging.Debug >= 9.0.9",
-      "Microsoft.Maui.Controls >= 9.0.120"
+      "Microsoft.Maui.Controls >= 9.0.120",
+      "SyrlasAIEngine >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -26596,19 +26845,35 @@
       "frameworks": {
         "net9.0-android35.0": {
           "targetAlias": "net9.0-android",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj": {
+              "projectPath": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj"
+            }
+          }
         },
         "net9.0-ios26.5": {
           "targetAlias": "net9.0-ios",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj": {
+              "projectPath": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj"
+            }
+          }
         },
         "net9.0-maccatalyst26.5": {
           "targetAlias": "net9.0-maccatalyst",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj": {
+              "projectPath": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj"
+            }
+          }
         },
         "net9.0-windows10.0.19041": {
           "targetAlias": "net9.0-windows10.0.19041.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj": {
+              "projectPath": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

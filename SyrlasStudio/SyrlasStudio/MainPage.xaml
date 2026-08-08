@@ -1,115 +1,147 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:SyrlasStudio.ViewModels"
              xmlns:models="clr-namespace:SyrlasStudio.Models"
              x:Class="SyrlasStudio.MainPage"
-             BackgroundColor="#1E1E1E">
+             x:DataType="vm:MainPageViewModel"
+             x:Name="RootPage"
+             Title="Syrlas Studio"
+             BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#1E1E1E}">
 
-    <Grid ColumnDefinitions="240, *, 360" RowDefinitions="*">
+    <!-- Корневая сетка: Левая панель (280) и Правая зона диалога (*) -->
+    <Grid ColumnDefinitions="280, *">
 
-        <!-- 1. ЛЕВАЯ ПАНЕЛЬ: Выбор ролей и контекст -->
-        <Border Grid.Column="0" BackgroundColor="#252526" StrokeThickness="0" Margin="0,0,1,0">
-            <Grid RowDefinitions="Auto, Auto, Auto, *" RowSpacing="12" Padding="15">
-                <Label Grid.Row="0" Text="Syrlas Studio" FontSize="18" FontAttributes="Bold" TextColor="#007ACC"/>
+        <!-- 1. ЛЕВАЯ ПАНЕЛЬ -->
+        <Border Grid.Column="0"
+                BackgroundColor="{AppThemeBinding Light=#F0F2F5, Dark=#252526}"
+                StrokeThickness="0"
+                StrokeShape="Rectangle">
+            <Grid RowDefinitions="Auto, *, Auto" Padding="12">
+                <Button Grid.Row="0"
+                        Text="+ Новый чат"
+                        Margin="0,0,0,12"
+                        BackgroundColor="#2B2D30"
+                        TextColor="White"
+                        CornerRadius="8" />
 
-                <!-- Выбор роли -->
-                <StackLayout Grid.Row="1" Spacing="6">
-                    <Label Text="АКТИВНЫЙ АГЕНТ" FontSize="11" FontAttributes="Bold" TextColor="#858585"/>
-                    <Picker ItemsSource="{Binding Roles}"
-                            SelectedItem="{Binding SelectedRole}"
-                            TextColor="White"
-                            BackgroundColor="#3C3C3C" />
+                <Label Grid.Row="1" 
+                       Text="История сессий..." 
+                       TextColor="Gray" 
+                       FontSize="13" />
+
+                <StackLayout Grid.Row="2" Padding="0,10,0,0">
+                    <Label Text="Syrlas Core: Active" 
+                           FontSize="12" 
+                           TextColor="Gray" 
+                           HorizontalOptions="Center" />
                 </StackLayout>
-
-                <!-- Контекст RAG -->
-                <StackLayout Grid.Row="2" Spacing="6">
-                    <Label Text="КОНТЕКСТ ПРОЕКТА (RAG)" FontSize="11" FontAttributes="Bold" TextColor="#858585"/>
-                    <Button Text="+ Добавить файлы" BackgroundColor="#3C3C3C" TextColor="White" HeightRequest="32" FontSize="12"/>
-                </StackLayout>
-
-                <ScrollView Grid.Row="3">
-                    <VerticalStackLayout Spacing="4">
-                        <Label Text="📄 WorkspaceController.cs" FontSize="12" TextColor="#CCCCCC"/>
-                        <Label Text="📄 AgentService.cs" FontSize="12" TextColor="#CCCCCC"/>
-                        <Label Text="📄 RagService.cs" FontSize="12" TextColor="#CCCCCC"/>
-                    </VerticalStackLayout>
-                </ScrollView>
             </Grid>
         </Border>
 
-        <!-- 2. ЦЕНТРАЛЬНАЯ ПАНЕЛЬ: Редактор кода с Inline-контекстом -->
-        <Grid Grid.Column="1" RowDefinitions="Auto, *" BackgroundColor="#1E1E1E">
-            
-            <!-- Шапка редактора с кнопкой передачи выделения в чат -->
-            <Border Grid.Row="0" BackgroundColor="#2D2D2D" StrokeThickness="0" HeightRequest="35">
-                <Grid ColumnDefinitions="Auto, *, Auto" Padding="15,0">
-                    <Label Grid.Column="0" Text="Workspace.cs" TextColor="White" FontSize="13" VerticalOptions="Center"/>
-                    
-                    <Button Grid.Column="2" 
-                            Text="💡 Объяснить выделенный код" 
-                            Command="{Binding AttachSelectedCodeCommand}"
-                            BackgroundColor="#3C3C3C" 
-                            TextColor="#007ACC" 
-                            FontSize="11" 
-                            HeightRequest="26"
-                            Padding="10,0"
-                            VerticalOptions="Center"/>
+        <!-- 2. ПРАВАЯ ПАНЕЛЬ -->
+        <Grid Grid.Column="1" RowDefinitions="Auto, *, Auto">
+
+            <!-- Хедер -->
+            <Border Grid.Row="0" 
+                    Padding="16,12" 
+                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2D2D2D}"
+                    StrokeThickness="1"
+                    Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#3E3E42}">
+                <Grid ColumnDefinitions="*, Auto">
+                    <StackLayout Grid.Column="0" Orientation="Vertical">
+                        <Label Text="Ассистент разработчика"
+                               FontAttributes="Bold"
+                               FontSize="16" />
+                        <Label Text="Модель: Qwen 2.5 Coder | Local Engine"
+                               FontSize="12"
+                               TextColor="Gray" />
+                    </StackLayout>
                 </Grid>
             </Border>
 
-            <!-- Редактор кода с TwoWay-привязкой курсора и выделения -->
-            <Editor Grid.Row="1" 
-                    Text="{Binding CodeEditorText}"
-                    CursorPosition="{Binding CursorPosition, Mode=TwoWay}"
-                    SelectionLength="{Binding SelectionLength, Mode=TwoWay}"
-                    FontFamily="Consolas"
-                    FontSize="14"
-                    TextColor="#D4D4D4"
-                    BackgroundColor="#1E1E1E"
-                    Margin="10"/>
+            <!-- Список сообщений -->
+            <CollectionView x:Name="MessagesCollectionView"
+                            Grid.Row="1"
+                            ItemsSource="{Binding Messages}"
+                            SelectionMode="None"
+                            Margin="16">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ChatMessage">
+                        <Grid Padding="0,6">
+                            <Border MaximumWidthRequest="750"
+                                    StrokeThickness="0"
+                                    Padding="14,10">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+
+                                <!-- Выравнивание и цвет через DataTrigger -->
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="HorizontalOptions" Value="Start" />
+                                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#E9ECEF, Dark=#2B2D30}" />
+                                        <Style.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsUser}" Value="True">
+                                                <Setter Property="HorizontalOptions" Value="End" />
+                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#005FB8, Dark=#0E639C}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+
+                                <StackLayout Spacing="6">
+                                    <Label Text="{Binding SenderName}"
+                                           FontSize="11"
+                                           FontAttributes="Bold"
+                                           TextColor="Gray" />
+
+                                    <Label Text="{Binding Text}"
+                                           FontSize="14"
+                                           LineBreakMode="WordWrap" />
+
+                                    <!-- Кнопка Apply to File через x:Reference RootPage -->
+                                    <Button Text="{Binding AppliedStatusText}"
+                                            Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ApplyCodeToFileCommand}"
+                                            CommandParameter="{Binding .}"
+                                            IsVisible="{Binding HasCode}"
+                                            FontSize="11"
+                                            HeightRequest="30"
+                                            Padding="10,0"
+                                            CornerRadius="6"
+                                            BackgroundColor="#007ACC"
+                                            TextColor="White" />
+                                </StackLayout>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Ввод сообщения -->
+            <Border Grid.Row="2"
+                    Padding="12"
+                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2D2D2D}"
+                    StrokeThickness="1"
+                    Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#3E3E42}">
+                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                    <Editor Grid.Column="0"
+                            Text="{Binding InputText, Mode=TwoWay}"
+                            Placeholder="Введите запрос или промпт..."
+                            AutoSize="TextChanges"
+                            MaximumHeightRequest="150"
+                            FontSize="14" />
+
+                    <Button Grid.Column="1"
+                            Text="Отправить"
+                            Command="{Binding SendMessageCommand}"
+                            VerticalOptions="End"
+                            HeightRequest="40"
+                            Padding="16,0" />
+                </Grid>
+            </Border>
+
         </Grid>
 
-        <!-- 3. ПРАВАЯ ПАНЕЛЬ: Чат с привязкой к ObservableCollection -->
-        <Border Grid.Column="2" BackgroundColor="#252526" StrokeThickness="0" Margin="1,0,0,0">
-            <Grid RowDefinitions="Auto, *, Auto" RowSpacing="10" Padding="15">
-                <Label Grid.Row="0" Text="AI ASSISTANT" FontSize="13" FontAttributes="Bold" TextColor="#858585"/>
-
-                <!-- Список сообщений -->
-                <CollectionView Grid.Row="1" ItemsSource="{Binding Messages}">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:ChatMessage">
-                            <Grid Padding="0,4">
-                                <Border BackgroundColor="{Binding BackgroundColor}" Padding="10" StrokeThickness="0">
-                                    <VerticalStackLayout Spacing="4">
-                                        <Label Text="{Binding Sender}" FontSize="11" FontAttributes="Bold" TextColor="{Binding SenderColor}"/>
-                                        <Label Text="{Binding Text}" FontSize="13" TextColor="White"/>
-                                    </VerticalStackLayout>
-                                </Border>
-                            </Grid>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-
-                <!-- Ввод сообщения и кнопка отправки -->
-                <Grid Grid.Row="2" ColumnDefinitions="*, Auto" ColumnSpacing="8">
-                    <Entry Grid.Column="0" 
-                           Text="{Binding PromptInput, Mode=TwoWay}"
-                           Placeholder="Задайте вопрос агенту..."
-                           PlaceholderColor="#858585"
-                           TextColor="White"
-                           BackgroundColor="#3C3C3C"
-                           HeightRequest="40"/>
-                    
-                    <Button Grid.Column="1" 
-                            Text="Отправить" 
-                            Command="{Binding SendMessageCommand}"
-                            BackgroundColor="#007ACC" 
-                            TextColor="White" 
-                            HeightRequest="40"/>
-                </Grid>
-            </Grid>
-        </Border>
-
     </Grid>
-
 </ContentPage>

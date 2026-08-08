@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using SyrlasAIEngine.Database;
-using SyrlasAIEngine.Services;
 using SyrlasStudio.ViewModels;
+using SyrlasAIEngine.Services;
 
 namespace SyrlasStudio;
 
@@ -18,29 +17,14 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
+        // Регистрация сервисов и ViewModel
+        builder.Services.AddSingleton<AgentService>();
+        builder.Services.AddTransient<MainPageViewModel>();
+        builder.Services.AddTransient<MainPage>();
+
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
-
-        // =========================================================
-        // 1. Регистрация сервисов ядра (SyrlasAIEngine)
-        // =========================================================
-
-        // Singleton: Инференс LLM и база данных должны жить в течение всего
-        // жизненного цикла приложения, чтобы не перегружать модель в VRAM/RAM.
-        builder.Services.AddSingleton<DatabaseInitializer>();
-        builder.Services.AddSingleton<LlamaInferenceService>();
-
-        // Transient: Сервисы логики создаются по требованию
-        builder.Services.AddTransient<RagService>();
-        builder.Services.AddTransient<AgentService>();
-
-        // =========================================================
-        // 2. Регистрация слоя представления и ViewModels (SyrlasStudio)
-        // =========================================================
-
-        builder.Services.AddSingleton<MainPageViewModel>();
-        builder.Services.AddSingleton<MainPage>();
 
         return builder.Build();
     }

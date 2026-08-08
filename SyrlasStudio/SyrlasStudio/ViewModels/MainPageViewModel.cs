@@ -1,83 +1,82 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using SyrlasAIEngine.Services;
 using SyrlasStudio.Models;
+using SyrlasStudio.Services;
 using System.Collections.ObjectModel;
 
 namespace SyrlasStudio.ViewModels;
 
 public partial class MainPageViewModel : ObservableObject
 {
-    private readonly AgentService _agentService;
-
-    // Событие для оповещения View о необходимости прокрутки
     public event Action<ChatMessage>? ScrollToRequested;
 
-    // ... свойства (SelectedRole, CodeEditorText, PromptInput и т.д.) ...
+#pragma warning disable MVVMTK0045
+    [ObservableProperty]
+    private ObservableCollection<ChatMessage> _messages = new();
+
+    [ObservableProperty]
+    private string _inputText = string.Empty;
+
+    [ObservableProperty]
+    private string _codeEditorText = "// Ваш код появится здесь после выбора или применения ответа ИИ\nusing System;\n\nnamespace SyrlasStudio;\n";
+
+    [ObservableProperty]
+    private bool _isGenerating;
+#pragma warning restore MVVMTK0045
 
     [RelayCommand]
     private async Task SendMessageAsync()
     {
-        if (string.IsNullOrWhiteSpace(PromptInput) || IsGenerating)
+        if (string.IsNullOrWhiteSpace(InputText) || IsGenerating)
             return;
 
-        string userPrompt = PromptInput;
-        string role = SelectedRole;
-
-        // 1. Добавляем сообщение пользователя
-        var userMessage = new ChatMessage
-        {
-            Sender = $"Вы ({role})",
-            Text = userPrompt,
-            BackgroundColor = "#0E639C",
-            SenderColor = "#FFFFFF"
-        };
-        Messages.Add(userMessage);
-        
-        // Скроллим к сообщению пользователя
-        ScrollToRequested?.Invoke(userMessage);
-
-        PromptInput = string.Empty;
+        string prompt = InputText;
+        InputText = string.Empty;
         IsGenerating = true;
 
-        // 2. Создаем заготовку ответа ИИ
-        var aiMessage = new ChatMessage
+        var userMsg = new ChatMessage
         {
-            Sender = $"Syrlas Assistant ({role})",
-            Text = string.Empty,
-            BackgroundColor = "#2D2D2D",
-            SenderColor = "#007ACC"
+            SenderName = "Вы (Разработчик)",
+            Text = prompt,
+            IsUser = true
         };
-        Messages.Add(aiMessage);
-        
-        // Скроллим к новому блоку ответа
-        ScrollToRequested?.Invoke(aiMessage);
+        Messages.Add(userMsg);
+        ScrollToRequested?.Invoke(userMsg);
 
-        try
+        var aiMsg = new ChatMessage
         {
-            // 3. Потоковый прием токенов
-            await foreach (var token in _agentService.ExecuteTaskStreamAsync(role, userPrompt))
-            {
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    aiMessage.Text += token;
-                    
-                    // Поворачиваем скролл вниз при добавлении каждого токена
-                    ScrollToRequested?.Invoke(aiMessage);
-                });
-            }
+            SenderName = "Syrlas Architect (Qwen 2.5 Coder)",
+            Text = string.Empty,
+            IsUser = false
+        };
+        Messages.Add(aiMsg);
+        ScrollToRequested?.Invoke(aiMsg);
+
+        string sampleResponse = "Отличное решение! Вот обновленная реализация метода:\n\n```csharp\npublic void ProcessData()\n{\n    Console.WriteLine(\"Syrlas Core Engine Processing...\");\n}\n```";
+        
+        foreach (char c in sampleResponse)
+        {
+            aiMsg.Text += c;
+            ScrollToRequested?.Invoke(aiMsg);
+            await Task.Delay(15);
         }
-        catch (Exception ex)
+
+        IsGenerating = false;
+    }
+
+    [RelayCommand]
+    private void ApplyCodeToFile(ChatMessage message)
+    {
+        if (message == null || string.IsNullOrWhiteSpace(message.Text))
+            return;
+
+        string extractedCode = CodeBlockExtractor.ExtractCode(message.Text);
+
+        if (!string.IsNullOrWhiteSpace(extractedCode))
         {
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                aiMessage.Text += $"\n\n⚠️ Ошибка генерации: {ex.Message}";
-                ScrollToRequested?.Invoke(aiMessage);
-            });
-        }
-        finally
-        {
-            IsGenerating = false;
+            CodeEditorText = extractedCode;
+            message.IsApplied = true;
+            message.AppliedStatusText = "✓ Применено в редактор";
         }
     }
 }
