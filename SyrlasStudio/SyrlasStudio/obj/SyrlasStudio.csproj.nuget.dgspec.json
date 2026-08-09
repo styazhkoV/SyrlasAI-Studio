@@ -52,6 +52,12 @@
             "LLamaSharp.Backend.Cuda12": {
               "target": "Package",
               "version": "[0.27.0, )"
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.18, )",
+              "autoReferenced": true
             }
           },
           "imports": [
@@ -157,6 +163,12 @@
             "Microsoft.Maui.Controls": {
               "target": "Package",
               "version": "[9.0.120, )"
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.18, )",
+              "autoReferenced": true
             }
           },
           "imports": [
