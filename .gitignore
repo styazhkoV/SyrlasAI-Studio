@@ -1,72 +1,49 @@
-# --- Общие ---
-*.log
-*.lock
-*.tmp
-*.bak
-*.swp
-
-# --- Windows ---
-Thumbs.db
-Desktop.ini
-
-# --- .NET / Visual Studio / MAUI ---
+# Общие правила для .NET
 bin/
 obj/
-*.pdb
 *.dll
 *.exe
-*.user
-*.suo
+*.pdb
 *.cache
-*.dbmdl
-*.aps
-*.ncb
-*.VC.db
-*.vscode/
-*.appx
+*.log
+*.user
+*.vs/
+*.db
+*.db-shm
+*.db-wal
+
+# MSIX и Windows App SDK артефакты
+*.pri
+*.winmd
+*.cat
+*.p7x
+*.xml
+*.manifest
 *.msix
 *.msixupload
+*.msixbundle
 
-# --- NuGet ---
+# Временные файлы Visual Studio
+.vscode/
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Пакеты NuGet
 *.nupkg
 *.snupkg
-*.nuspec
-project.lock.json
-project.assets.json
-*.nuget.props
-*.nuget.targets
 packages/
+.nuget/
 
-# --- Entity Framework ---
-Migrations/obj/
-*.db
-*.sqlite
-*.mdf
-*.ldf
+# Конфигурации и временные лицензии
+*.license.xml
+*.licx
 
-# --- Node.js / Electron ---
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-dist/
-build/
-electron-builder.yml
-*.asar
+# Локализационные ресурсы (mui)
+*.mui
 
-# --- AI модели / большие файлы ---
-*.gguf
-*.onnx
-*.pt
-*.h5
-*.ckpt
-*.so
-*.dylib
+# Кэш SourceLink
+*.sourcelink.json
 
-# --- IDE ---
-.vscode/
-.idea/
-*.iml
-
-# --- OS ---
-.DS_Store
+# Автоматически генерируемые списки файлов
+*.FileListAbsolute.txt
