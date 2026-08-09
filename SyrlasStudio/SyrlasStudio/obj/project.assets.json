@@ -943,7 +943,7 @@
         }
       }
     },
-    "net9.0-windows10.0.19041/win10-x64": {
+    "net9.0-windows10.0.19041/win-x64": {
       "CommunityToolkit.HighPerformance/8.4.2": {
         "type": "package",
         "compile": {
@@ -4532,7 +4532,7 @@
       }
     },
     "runtimes": {
-      "win10-x64": {
+      "win-x64": {
         "#import": []
       }
     }

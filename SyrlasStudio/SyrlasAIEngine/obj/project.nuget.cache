@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "vwDlthr+xQA=",
+  "dgSpecHash": "/HQvAeVXtn0=",
   "success": true,
   "projectFilePath": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj",
   "expectedPackageFiles": [
@@ -22,7 +22,10 @@
     "C:\\Users\\alexs\\.nuget\\packages\\system.linq.asyncenumerable\\10.0.2\\system.linq.asyncenumerable.10.0.2.nupkg.sha512",
     "C:\\Users\\alexs\\.nuget\\packages\\system.numerics.tensors\\10.0.5\\system.numerics.tensors.10.0.5.nupkg.sha512",
     "C:\\Users\\alexs\\.nuget\\packages\\system.text.encodings.web\\10.0.4\\system.text.encodings.web.10.0.4.nupkg.sha512",
-    "C:\\Users\\alexs\\.nuget\\packages\\system.text.json\\10.0.4\\system.text.json.10.0.4.nupkg.sha512"
+    "C:\\Users\\alexs\\.nuget\\packages\\system.text.json\\10.0.4\\system.text.json.10.0.4.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\9.0.18\\microsoft.netcore.app.runtime.win-x64.9.0.18.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\9.0.18\\microsoft.windowsdesktop.app.runtime.win-x64.9.0.18.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\9.0.18\\microsoft.aspnetcore.app.runtime.win-x64.9.0.18.nupkg.sha512"
   ],
   "logs": []
 }

@@ -21,7 +21,6 @@ public class AgentService : IDisposable
 
     public bool IsInitialized { get; private set; }
 
-    // Конструктор больше не блокирует потоки тяжелой синхронной загрузкой[cite: 3]
     public AgentService()
     {
     }
@@ -43,7 +42,6 @@ public class AgentService : IDisposable
         {
             logCallback?.Invoke("Загрузка модели и выделение памяти на GTX 1070...");
 
-            // Тонкая настройка параметров для 8 ГБ VRAM (ContextSize = 2048, GpuLayerCount = 99)[cite: 3]
             var parameters = new ModelParams(ModelPath)
             {
                 GpuLayerCount = 99, 
@@ -88,8 +86,10 @@ public class AgentService : IDisposable
             AntiPrompts = new List<string> { "<|im_end|>", "<|endoftext|>" }
         };
 
+        var chatMessage = new ChatHistory.Message(AuthorRole.User, userPrompt);
+
         // ChatSession автоматически подставляет историю и кэширует токены предыдущих сообщений
-        await foreach (var token in _session.ChatAsync(userPrompt, inferenceParams, cancellationToken))
+        await foreach (var token in _session.ChatAsync(chatMessage, inferenceParams, cancellationToken))
         {
             yield return token;
         }
