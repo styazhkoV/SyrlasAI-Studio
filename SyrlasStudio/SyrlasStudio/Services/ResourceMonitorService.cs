@@ -69,7 +69,7 @@ public class ResourceMonitorService
             }
             catch { }
 
-            await Task.Delay(1000, token);
+            await Task.Delay(3000, token);
         }
     }
 

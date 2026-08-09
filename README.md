@@ -1,5 +1,5 @@
 # SyrlasAI-Studio
-
+dotnet publish "C:\Users\alexs\SyrlasStudio\SyrlasStudio\SyrlasStudio\SyrlasStudio.csproj" -c Release -f net9.0-windows10.0.19041.0 --self-contained true
 ## 1\. Архитектура UI и Инсталлятора (Аналог VS Code)
 
 Поскольку вы ориентируетесь на опыт VS Code, идеальным стеком для фронтенда будет связка **Electron + React**. Это позволит завернуть ваш веб-интерфейс в нативное окно и запускать .NET 8 бэкенд фоновым процессом прямо при старте приложения.

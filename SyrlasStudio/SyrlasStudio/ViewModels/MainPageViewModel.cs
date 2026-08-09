@@ -61,7 +61,9 @@ public partial class MainPageViewModel : ObservableObject
         _monitorService.MetricsUpdated += OnMetricsUpdated;
 
         Log("Система Syrlas Studio инициализирована.");
-        Log("Готов к загрузке весов...");
+        
+        // Запуск асинхронной инициализации ИИ без блокировки UI
+        _ = InitializeEngineAsync();
     }
 
     private void OnMetricsUpdated(double cpuPercent, double ramMb, double diskPercent, double vramMb)
@@ -81,6 +83,18 @@ public partial class MainPageViewModel : ObservableObject
             VramUsageText = $"VRAM: {vramMb:F0} MB";
             VramProgress = Math.Min(vramMb / 8192.0, 1.0);
         });
+    }
+    private async Task InitializeEngineAsync()
+    {
+        try
+        {
+            await _agentService.InitializeAsync(logMessage => Log(logMessage));
+            Log("Готов к загрузке весов... [Завершено]");
+        }
+        catch (Exception ex)
+        {
+            Log($"ОШИБКА ДВИЖКА: {ex.Message}");
+        }
     }
 
     public void Log(string message)

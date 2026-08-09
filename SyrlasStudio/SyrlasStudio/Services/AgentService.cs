@@ -14,70 +14,82 @@ public class AgentService : IDisposable
     private LLamaWeights? _weights;
     private LLamaContext? _context;
     private InteractiveExecutor? _executor;
+    private ChatSession? _session;
 
-    // Путь к вашей модели Qwen 2.5 1.5B
+    // Путь к модели Qwen 2.5 1.5B
     private const string ModelPath = @"C:\Users\alexs\SyrlasStudio\SyrlasAIEngine\Model\Qwen2.5-1.5B-Instruct-Q4_K_L.gguf";
 
     public bool IsInitialized { get; private set; }
 
+    // Конструктор больше не блокирует потоки тяжелой синхронной загрузкой[cite: 3]
     public AgentService()
     {
-        InitializeEngine();
     }
 
-    private void InitializeEngine()
+    /// <summary>
+    /// Асинхронная инициализация движка в фоновом режиме с выводом статуса в лог
+    /// </summary>
+    public async Task InitializeAsync(Action<string>? logCallback = null)
     {
+        if (IsInitialized) return;
+
+        logCallback?.Invoke("Проверка файла весов модели...");
         if (!File.Exists(ModelPath))
         {
             throw new FileNotFoundException($"Файл модели не найден по пути: {ModelPath}");
         }
 
-        // 1. Параметры загрузки модели с полным переносом на GTX 1070 VRAM
-        var parameters = new ModelParams(ModelPath)
+        await Task.Run(() =>
         {
-            GpuLayerCount = 99, // Загружает все слои в видеопамять (минуя слабый CPU)
-            ContextSize = 2048, 
-            BatchSize = 512,
-            UseMemoryLock = false
-        };
+            logCallback?.Invoke("Загрузка модели и выделение памяти на GTX 1070...");
 
-        // 2. Загрузка весов модели
-        _weights = LLamaWeights.LoadFromFile(parameters);
+            // Тонкая настройка параметров для 8 ГБ VRAM (ContextSize = 2048, GpuLayerCount = 99)[cite: 3]
+            var parameters = new ModelParams(ModelPath)
+            {
+                GpuLayerCount = 99, 
+                ContextSize = 2048, 
+                BatchSize = 512,
+                UseMemoryLock = false
+            };
 
-        // 3. Создание контекста инференса
-        _context = _weights.CreateContext(parameters);
+            // Загрузка весов и контекста
+            _weights = LLamaWeights.LoadFromFile(parameters);
+            _context = _weights.CreateContext(parameters);
+            _executor = new InteractiveExecutor(_context);
 
-        // 4. Инициализация исполнителя диалога
-        _executor = new InteractiveExecutor(_context);
+            // Инициализация ChatSession для работы с KV-Cache (Prompt Caching)
+            _session = new ChatSession(_executor);
 
-        IsInitialized = true;
+            // Задание системного роли через сессию
+            _session.History.AddMessage(AuthorRole.System, "You are Syrlas AI, a helpful and precise assistant.");
+
+            IsInitialized = true;
+        });
+
+        logCallback?.Invoke("Локальный движок ИИ успешно инициализирован и готов к работе.");
     }
 
     /// <summary>
-    /// Потоковая генерация ответа токен за токеном
+    /// Потоковая генерация ответа с сохранением KV-Cache через ChatSession
     /// </summary>
     public async IAsyncEnumerable<string> GenerateResponseAsync(
         string userPrompt, 
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        if (!IsInitialized || _executor == null)
+        if (!IsInitialized || _session == null)
         {
             yield return "Ошибка: Локальный движок ИИ не инициализирован.";
             yield break;
         }
 
-        // Системный промпт для правильного формата Qwen
-        string formattedPrompt = $"<|im_start|>system\nYou are Syrlas AI, a helpful and precise assistant.<|im_end|>\n<|im_start|>user\n{userPrompt}<|im_end|>\n<|im_start|>assistant\n";
-
-        // Актуальные параметры инференса для LLamaSharp v0.27.0
         var inferenceParams = new InferenceParams
         {
             MaxTokens = 1024,
             AntiPrompts = new List<string> { "<|im_end|>", "<|endoftext|>" }
         };
 
-        // Запуск генерации через GPU
-        await foreach (var token in _executor.InferAsync(formattedPrompt, inferenceParams, cancellationToken))
+        // ChatSession автоматически подставляет историю и кэширует токены предыдущих сообщений
+        await foreach (var token in _session.ChatAsync(userPrompt, inferenceParams, cancellationToken))
         {
             yield return token;
         }
@@ -85,6 +97,8 @@ public class AgentService : IDisposable
 
     public void Dispose()
     {
+        _session = null;
+        _executor = null;
         _context?.Dispose();
         _weights?.Dispose();
     }
