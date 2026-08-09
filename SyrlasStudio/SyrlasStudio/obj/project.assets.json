@@ -57,7 +57,7 @@
       "LLamaSharp.Backend.Cpu/0.27.0": {
         "type": "package",
         "build": {
-          "build/netstandard2.0/_._": {}
+          "build/netstandard2.0/LLamaSharp.Backend.Cpu.props": {}
         }
       },
       "LLamaSharp.Backend.Cuda12/0.27.0": {
@@ -67,7 +67,7 @@
           "LLamaSharp.Backend.Cuda12.Windows": "0.27.0"
         },
         "build": {
-          "build/netstandard2.0/_._": {}
+          "build/netstandard2.0/LLamaSharp.Backend.Cuda12.props": {}
         }
       },
       "LLamaSharp.Backend.Cuda12.Linux/0.27.0": {
@@ -76,7 +76,7 @@
           "LLamaSharp.Backend.Cpu": "0.27.0"
         },
         "build": {
-          "build/netstandard2.0/_._": {}
+          "build/netstandard2.0/LLamaSharp.Backend.Cuda12.Linux.props": {}
         }
       },
       "LLamaSharp.Backend.Cuda12.Windows/0.27.0": {
@@ -85,7 +85,7 @@
           "LLamaSharp.Backend.Cpu": "0.27.0"
         },
         "build": {
-          "build/netstandard2.0/_._": {}
+          "build/netstandard2.0/LLamaSharp.Backend.Cuda12.Windows.props": {}
         }
       },
       "Microsoft.Bcl.AsyncInterfaces/10.0.5": {
@@ -999,7 +999,7 @@
       "LLamaSharp.Backend.Cpu/0.27.0": {
         "type": "package",
         "build": {
-          "build/netstandard2.0/_._": {}
+          "build/netstandard2.0/LLamaSharp.Backend.Cpu.props": {}
         }
       },
       "LLamaSharp.Backend.Cuda12/0.27.0": {
@@ -1009,7 +1009,7 @@
           "LLamaSharp.Backend.Cuda12.Windows": "0.27.0"
         },
         "build": {
-          "build/netstandard2.0/_._": {}
+          "build/netstandard2.0/LLamaSharp.Backend.Cuda12.props": {}
         }
       },
       "LLamaSharp.Backend.Cuda12.Linux/0.27.0": {
@@ -1018,7 +1018,7 @@
           "LLamaSharp.Backend.Cpu": "0.27.0"
         },
         "build": {
-          "build/netstandard2.0/_._": {}
+          "build/netstandard2.0/LLamaSharp.Backend.Cuda12.Linux.props": {}
         }
       },
       "LLamaSharp.Backend.Cuda12.Windows/0.27.0": {
@@ -1027,7 +1027,7 @@
           "LLamaSharp.Backend.Cpu": "0.27.0"
         },
         "build": {
-          "build/netstandard2.0/_._": {}
+          "build/netstandard2.0/LLamaSharp.Backend.Cuda12.Windows.props": {}
         }
       },
       "Microsoft.Bcl.AsyncInterfaces/10.0.5": {
@@ -4411,6 +4411,8 @@
   "projectFileDependencyGroups": {
     "net9.0-windows10.0.19041": [
       "CommunityToolkit.Mvvm >= 8.4.2",
+      "LLamaSharp >= 0.27.0",
+      "LLamaSharp.Backend.Cuda12 >= 0.27.0",
       "Microsoft.Extensions.Logging.Debug >= 9.0.9",
       "Microsoft.Maui.Controls >= 9.0.120",
       "SyrlasAIEngine >= 1.0.0"
@@ -4468,6 +4470,14 @@
             "target": "Package",
             "version": "[8.4.2, )"
           },
+          "LLamaSharp": {
+            "target": "Package",
+            "version": "[0.27.0, )"
+          },
+          "LLamaSharp.Backend.Cuda12": {
+            "target": "Package",
+            "version": "[0.27.0, )"
+          },
           "Microsoft.Extensions.Logging.Debug": {
             "target": "Package",
             "version": "[9.0.9, )"
@@ -4490,8 +4500,24 @@
         "warn": true,
         "downloadDependencies": [
           {
+            "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+            "version": "[9.0.18, 9.0.18]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Crossgen2.win-x64",
+            "version": "[9.0.18, 9.0.18]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Runtime.win-x64",
+            "version": "[9.0.18, 9.0.18]"
+          },
+          {
             "name": "Microsoft.Windows.SDK.NET.Ref",
             "version": "[10.0.19041.57, 10.0.19041.57]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+            "version": "[9.0.18, 9.0.18]"
           }
         ],
         "frameworkReferences": {

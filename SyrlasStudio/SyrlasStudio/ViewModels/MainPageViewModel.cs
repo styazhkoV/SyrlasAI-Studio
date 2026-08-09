@@ -1,7 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using SyrlasStudio.Models;
+using Microsoft.Maui.Controls;
 using SyrlasStudio.Services;
+using SyrlasStudio.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading;
@@ -12,111 +13,146 @@ namespace SyrlasStudio.ViewModels;
 public partial class MainPageViewModel : ObservableObject
 {
     private readonly AgentService _agentService;
-    private CancellationTokenSource? _cts; // Источник токена отмены
+    private readonly ResourceMonitorService _monitorService;
+    private CancellationTokenSource? _cts;
 
+    // Событие для прокрутки чата вниз
     public event Action<ChatMessage>? ScrollToRequested;
 
-#pragma warning disable MVVMTK0045
     [ObservableProperty]
     private ObservableCollection<ChatMessage> _messages = new();
 
     [ObservableProperty]
-    private string _inputText = string.Empty;
+    private string _userInputText = string.Empty;
 
     [ObservableProperty]
-    private string _codeEditorText = "// Ваш код появится здесь после применения ответа ИИ\nusing System;\n\nnamespace SyrlasStudio;\n";
+    private ObservableCollection<string> _systemLogs = new();
+
+    // Метрики ресурсов системы и GPU
+    [ObservableProperty]
+    private string _cpuUsageText = "CPU: 0%";
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsNotGenerating))] // Автоматически обновляет обратное свойство
-    private bool _isGenerating;
-
-    public bool IsNotGenerating => !IsGenerating; // Индикатор для видимости кнопки отправки
+    private double _cpuProgress = 0.0;
 
     [ObservableProperty]
-    private string _modelPath = @"C:\Users\alexs\SyrlasStudio\SyrlasAIEngine\Model\qwen2.5-14b-instruct-uncensored-q5_k_m.gguf";
-#pragma warning restore MVVMTK0045
+    private string _ramUsageText = "RAM: 0 MB";
+
+    [ObservableProperty]
+    private double _ramProgress = 0.0;
+
+    [ObservableProperty]
+    private string _diskUsageText = "Disk: 0%";
+
+    [ObservableProperty]
+    private double _diskProgress = 0.0;
+
+    [ObservableProperty]
+    private string _vramUsageText = "VRAM: 0 MB";
+
+    [ObservableProperty]
+    private double _vramProgress = 0.0;
 
     public MainPageViewModel(AgentService agentService)
     {
         _agentService = agentService;
+
+        _monitorService = new ResourceMonitorService();
+        _monitorService.MetricsUpdated += OnMetricsUpdated;
+
+        Log("Система Syrlas Studio инициализирована.");
+        Log("Готов к загрузке весов...");
+    }
+
+    private void OnMetricsUpdated(double cpuPercent, double ramMb, double diskPercent, double vramMb)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            CpuUsageText = $"CPU: {cpuPercent:F1}%";
+            CpuProgress = Math.Min(cpuPercent / 100.0, 1.0);
+
+            RamUsageText = $"RAM: {ramMb:F0} MB";
+            RamProgress = Math.Min(ramMb / 16384.0, 1.0); // Шкала на 16 ГБ RAM
+
+            DiskUsageText = $"Disk: {diskPercent:F0}%";
+            DiskProgress = Math.Min(diskPercent / 100.0, 1.0);
+
+            // GTX 1070 имеет 8192 MB VRAM
+            VramUsageText = $"VRAM: {vramMb:F0} MB";
+            VramProgress = Math.Min(vramMb / 8192.0, 1.0);
+        });
+    }
+
+    public void Log(string message)
+    {
+        string timestamp = DateTime.Now.ToString("HH:mm:ss");
+        string logEntry = $"[{timestamp}] {message}";
+
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            SystemLogs.Add(logEntry);
+            if (SystemLogs.Count > 50)
+            {
+                SystemLogs.RemoveAt(0);
+            }
+        });
     }
 
     [RelayCommand]
     private async Task SendMessageAsync()
     {
-        if (string.IsNullOrWhiteSpace(InputText) || IsGenerating)
-            return;
+        if (string.IsNullOrWhiteSpace(UserInputText)) return;
 
-        string prompt = InputText;
-        InputText = string.Empty;
-        IsGenerating = true;
+        string prompt = UserInputText;
+        UserInputText = string.Empty;
 
-        // Создаем новый токен для текущей генерации
-        _cts = new CancellationTokenSource();
-
-        var userMsg = new ChatMessage
-        {
-            SenderName = "Вы (Разработчик)",
-            Text = prompt,
-            IsUser = true
-        };
+        var userMsg = new ChatMessage { Text = prompt, IsUser = true, SenderName = "Вы" };
         Messages.Add(userMsg);
         ScrollToRequested?.Invoke(userMsg);
 
-        var aiMsg = new ChatMessage
-        {
-            SenderName = "Syrlas Architect (Qwen 2.5 14B)",
-            Text = string.Empty,
-            IsUser = false
-        };
+        var aiMsg = new ChatMessage { Text = "", IsUser = false, SenderName = "Syrlas AI Assistant" };
         Messages.Add(aiMsg);
         ScrollToRequested?.Invoke(aiMsg);
 
+        Log("Запрос отправлен в локальный движок...");
+        
+        _cts?.Cancel();
+        _cts = new CancellationTokenSource();
+
         try
         {
-            // Передаем токен отмены в сервис генерации
             await foreach (string token in _agentService.GenerateResponseAsync(prompt, _cts.Token))
             {
                 aiMsg.Text += token;
-                ScrollToRequested?.Invoke(aiMsg);
             }
+            Log("Генерация ответа успешно завершена.");
         }
         catch (OperationCanceledException)
         {
-            aiMsg.Text += "\n\n⏹️ [Генерация остановлена пользователем]";
+            Log("Прерывание: Операция отменена.");
         }
         catch (Exception ex)
         {
-            aiMsg.Text += $"\n\n❌ [Ошибка AI]: {ex.Message}";
-        }
-        finally
-        {
-            _cts?.Dispose();
-            _cts = null;
-            IsGenerating = false;
+            Log($"ОШИБКА ДВИЖКА: {ex.Message}");
+            aiMsg.Text += $"\n[Ошибка: {ex.Message}]";
         }
     }
 
-    // Команда для остановки генерации
     [RelayCommand]
-    private void StopGeneration()
+    private void NewChat()
     {
         _cts?.Cancel();
+        Messages.Clear();
+        Log("Начат новый диалог.");
     }
 
     [RelayCommand]
-    private void ApplyCodeToFile(ChatMessage message)
+    private async Task CopyCodeAsync(string code)
     {
-        if (message == null || string.IsNullOrWhiteSpace(message.Text))
-            return;
-
-        string extractedCode = CodeBlockExtractor.ExtractCode(message.Text);
-
-        if (!string.IsNullOrWhiteSpace(extractedCode))
+        if (!string.IsNullOrEmpty(code))
         {
-            CodeEditorText = extractedCode;
-            message.IsApplied = true;
-            message.AppliedStatusText = "✓ Применено в редактор";
+            await Clipboard.Default.SetTextAsync(code);
+            Log("Код скопирован в буфер обмена.");
         }
     }
 }
