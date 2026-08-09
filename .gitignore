@@ -1,4 +1,4 @@
-# Общие правила для .NET
+# --- Общие артефакты .NET ---
 bin/
 obj/
 *.dll
@@ -11,39 +11,49 @@ obj/
 *.db
 *.db-shm
 *.db-wal
+*.runtimeconfig.json
+*.deps.json
 
-# MSIX и Windows App SDK артефакты
-*.pri
+# --- Electrone / MAUI ---
 *.winmd
-*.cat
-*.p7x
-*.xml
-*.manifest
+*.pri
+*.mui
+*.xbf
+*.resources.dll
+*.xaml.g.cs
+*.xaml.cs
+*.xaml
+*.ttf
+*.ico
+*.png
+*.jpg
+*.jpeg
+*.bmp
+
+# --- MSIX / Windows App SDK ---
 *.msix
 *.msixupload
 *.msixbundle
+*.manifest
+*.cat
+*.p7x
+*.xml
+*.FileListAbsolute.txt
 
-# Временные файлы Visual Studio
-.vscode/
-*.suo
-*.userosscache
-*.sln.docstates
+# --- AI модели ---
+*.gguf
+*.onnx
+*.pb
+*.ckpt
 
-# Пакеты NuGet
+# --- NuGet пакеты ---
 *.nupkg
 *.snupkg
 packages/
 .nuget/
 
-# Конфигурации и временные лицензии
-*.license.xml
-*.licx
-
-# Локализационные ресурсы (mui)
-*.mui
-
-# Кэш SourceLink
-*.sourcelink.json
-
-# Автоматически генерируемые списки файлов
-*.FileListAbsolute.txt
+# --- IDE и временные файлы ---
+.vscode/
+*.suo
+*.userosscache
+*.sln.docstates
