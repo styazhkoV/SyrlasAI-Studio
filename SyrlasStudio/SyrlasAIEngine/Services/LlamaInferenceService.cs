@@ -11,7 +11,13 @@ namespace SyrlasAIEngine.Services;
 
 public class LlamaInferenceService : IDisposable
 {
-    private readonly string _modelPath = @"C:\Users\alexs\SyrlasStudio\SyrlasAIEngine\Model\qwen2.5-14b-instruct-uncensored-q5_k_m.gguf";
+    private static readonly string[] ModelCandidates =
+    [
+        @"X:\SyrlasStudio\SyrlasStudio\SyrlasAIEngine\Model\qwen2.5-coder-1.5b-instruct-q4_k_m.gguf",
+        @"X:\SyrlasStudio\SyrlasStudio\SyrlasAIEngine\Model\qwen2.5-coder-0.5b-instruct-q4_k_m.gguf",
+        @"X:\SyrlasStudio\SyrlasAIEngine\Model\Qwen2.5-1.5B-Instruct-Q4_K_L.gguf"
+    ];
+
     private LLamaWeights? _weights;
     private StatelessExecutor? _executor;
     private bool _isInitialized;
@@ -26,18 +32,18 @@ public class LlamaInferenceService : IDisposable
         {
             if (_isInitialized) return;
 
-            if (!File.Exists(_modelPath))
-            {
-                throw new FileNotFoundException($"Файл модели не найден по пути: {_modelPath}");
-            }
+            var modelPath = Array.Find(ModelCandidates, File.Exists)
+                ?? throw new FileNotFoundException("Файл модели не найден в SyrlasAIEngine\\Model.");
 
             await Task.Run(() =>
             {
-                var parameters = new ModelParams(_modelPath)
+                var parameters = new ModelParams(modelPath)
                 {
-                    ContextSize = 4096,
-                    GpuLayerCount = 32,
-                    Threads = 4
+                    ContextSize = 2048,
+                    GpuLayerCount = 99,
+                    Threads = 6,
+                    UseMemoryLock = false,
+                    UseMemorymap = true
                 };
 
                 _weights = LLamaWeights.LoadFromFile(parameters);

@@ -1,5 +1,4 @@
 ﻿using SyrlasStudio.ViewModels;
-using SyrlasStudio.Models;
 
 namespace SyrlasStudio;
 
@@ -10,31 +9,26 @@ public partial class MainPage : ContentPage
     public MainPage(MainPageViewModel viewModel)
     {
         InitializeComponent();
+
         _viewModel = viewModel;
         BindingContext = _viewModel;
 
+        // Автоматический скролл вниз при получении новых токенов
         _viewModel.ScrollToRequested += OnScrollToRequested;
     }
 
-    protected override void OnDisappearing()
+    public MainPage() : this(new MainPageViewModel())
     {
-        base.OnDisappearing();
-        
-        // Отписываемся от события при уходе со страницы, чтобы избежать утечек памяти
-        if (_viewModel != null)
-        {
-            _viewModel.ScrollToRequested -= OnScrollToRequested;
-        }
     }
 
-    private void OnScrollToRequested(ChatMessage message)
+    private void OnScrollToRequested()
     {
-        MainThread.BeginInvokeOnMainThread(() =>
+        if (_viewModel?.Messages != null && _viewModel.Messages.Count > 0)
         {
-            if (message != null && MessagesCollectionView != null)
+            MainThread.BeginInvokeOnMainThread(() =>
             {
-                MessagesCollectionView.ScrollTo(message, position: ScrollToPosition.End, animate: true);
-            }
-        });
+                MessagesCollectionView.ScrollTo(_viewModel.Messages.Count - 1, animate: true);
+            });
+        }
     }
 }

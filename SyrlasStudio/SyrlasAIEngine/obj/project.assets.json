@@ -153,12 +153,6 @@
           "buildTransitive/net8.0/Microsoft.Extensions.Logging.Abstractions.targets": {}
         }
       },
-      "Microsoft.NET.ILLink.Tasks/9.0.18": {
-        "type": "package",
-        "build": {
-          "build/Microsoft.NET.ILLink.Tasks.props": {}
-        }
-      },
       "System.Diagnostics.DiagnosticSource/10.0.5": {
         "type": "package",
         "compile": {
@@ -280,298 +274,6 @@
             "assetType": "runtime",
             "rid": "win"
           }
-        }
-      },
-      "System.Text.Json/10.0.4": {
-        "type": "package",
-        "dependencies": {
-          "System.IO.Pipelines": "10.0.4",
-          "System.Text.Encodings.Web": "10.0.4"
-        },
-        "compile": {
-          "lib/net9.0/System.Text.Json.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net9.0/System.Text.Json.dll": {
-            "related": ".xml"
-          }
-        },
-        "build": {
-          "buildTransitive/net8.0/System.Text.Json.targets": {}
-        }
-      }
-    },
-    "net9.0/win-x64": {
-      "CommunityToolkit.HighPerformance/8.4.2": {
-        "type": "package",
-        "compile": {
-          "lib/net8.0/CommunityToolkit.HighPerformance.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net8.0/CommunityToolkit.HighPerformance.dll": {
-            "related": ".xml"
-          }
-        }
-      },
-      "LLamaSharp/0.27.0": {
-        "type": "package",
-        "dependencies": {
-          "CommunityToolkit.HighPerformance": "8.4.2",
-          "Microsoft.Bcl.AsyncInterfaces": "10.0.5",
-          "Microsoft.Bcl.Memory": "10.0.5",
-          "Microsoft.Extensions.AI.Abstractions": "10.4.1",
-          "Microsoft.Extensions.Logging.Abstractions": "10.0.5",
-          "System.Linq.Async": "7.0.0",
-          "System.Linq.AsyncEnumerable": "10.0.2",
-          "System.Numerics.Tensors": "10.0.5"
-        },
-        "compile": {
-          "lib/net8.0/LLamaSharp.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net8.0/LLamaSharp.dll": {
-            "related": ".xml"
-          }
-        }
-      },
-      "LLamaSharp.Backend.Cpu/0.27.0": {
-        "type": "package",
-        "build": {
-          "build/netstandard2.0/LLamaSharp.Backend.Cpu.props": {}
-        }
-      },
-      "LLamaSharp.Backend.Cuda12/0.27.0": {
-        "type": "package",
-        "dependencies": {
-          "LLamaSharp.Backend.Cuda12.Linux": "0.27.0",
-          "LLamaSharp.Backend.Cuda12.Windows": "0.27.0"
-        },
-        "build": {
-          "build/netstandard2.0/LLamaSharp.Backend.Cuda12.props": {}
-        }
-      },
-      "LLamaSharp.Backend.Cuda12.Linux/0.27.0": {
-        "type": "package",
-        "dependencies": {
-          "LLamaSharp.Backend.Cpu": "0.27.0"
-        },
-        "build": {
-          "build/netstandard2.0/LLamaSharp.Backend.Cuda12.Linux.props": {}
-        }
-      },
-      "LLamaSharp.Backend.Cuda12.Windows/0.27.0": {
-        "type": "package",
-        "dependencies": {
-          "LLamaSharp.Backend.Cpu": "0.27.0"
-        },
-        "build": {
-          "build/netstandard2.0/LLamaSharp.Backend.Cuda12.Windows.props": {}
-        }
-      },
-      "Microsoft.Bcl.AsyncInterfaces/10.0.5": {
-        "type": "package",
-        "compile": {
-          "lib/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll": {
-            "related": ".xml"
-          }
-        }
-      },
-      "Microsoft.Bcl.Memory/10.0.5": {
-        "type": "package",
-        "compile": {
-          "lib/net9.0/Microsoft.Bcl.Memory.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net9.0/Microsoft.Bcl.Memory.dll": {
-            "related": ".xml"
-          }
-        },
-        "build": {
-          "buildTransitive/net8.0/_._": {}
-        }
-      },
-      "Microsoft.Extensions.AI.Abstractions/10.4.1": {
-        "type": "package",
-        "dependencies": {
-          "System.Text.Json": "10.0.4"
-        },
-        "compile": {
-          "lib/net9.0/Microsoft.Extensions.AI.Abstractions.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net9.0/Microsoft.Extensions.AI.Abstractions.dll": {
-            "related": ".xml"
-          }
-        }
-      },
-      "Microsoft.Extensions.DependencyInjection.Abstractions/10.0.5": {
-        "type": "package",
-        "compile": {
-          "lib/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
-            "related": ".xml"
-          }
-        },
-        "build": {
-          "buildTransitive/net8.0/_._": {}
-        }
-      },
-      "Microsoft.Extensions.Logging.Abstractions/10.0.5": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.5",
-          "System.Diagnostics.DiagnosticSource": "10.0.5"
-        },
-        "compile": {
-          "lib/net9.0/Microsoft.Extensions.Logging.Abstractions.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net9.0/Microsoft.Extensions.Logging.Abstractions.dll": {
-            "related": ".xml"
-          }
-        },
-        "build": {
-          "buildTransitive/net8.0/Microsoft.Extensions.Logging.Abstractions.targets": {}
-        }
-      },
-      "Microsoft.NET.ILLink.Tasks/9.0.18": {
-        "type": "package",
-        "build": {
-          "build/Microsoft.NET.ILLink.Tasks.props": {}
-        }
-      },
-      "System.Diagnostics.DiagnosticSource/10.0.5": {
-        "type": "package",
-        "compile": {
-          "lib/net9.0/System.Diagnostics.DiagnosticSource.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net9.0/System.Diagnostics.DiagnosticSource.dll": {
-            "related": ".xml"
-          }
-        },
-        "build": {
-          "buildTransitive/net8.0/_._": {}
-        }
-      },
-      "System.Interactive.Async/7.0.0": {
-        "type": "package",
-        "dependencies": {
-          "System.Linq.AsyncEnumerable": "10.0.0"
-        },
-        "compile": {
-          "ref/net6.0/System.Interactive.Async.dll": {
-            "related": ".deps.json;.xml"
-          }
-        },
-        "runtime": {
-          "lib/net6.0/System.Interactive.Async.dll": {
-            "related": ".xml"
-          }
-        }
-      },
-      "System.IO.Pipelines/10.0.4": {
-        "type": "package",
-        "compile": {
-          "lib/net9.0/System.IO.Pipelines.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net9.0/System.IO.Pipelines.dll": {
-            "related": ".xml"
-          }
-        },
-        "build": {
-          "buildTransitive/net8.0/_._": {}
-        }
-      },
-      "System.Linq.Async/7.0.0": {
-        "type": "package",
-        "dependencies": {
-          "System.Interactive.Async": "7.0.0",
-          "System.Linq.AsyncEnumerable": "10.0.0"
-        },
-        "compile": {
-          "ref/netstandard2.1/System.Linq.Async.dll": {
-            "related": ".deps.json;.xml"
-          }
-        },
-        "runtime": {
-          "lib/netstandard2.1/System.Linq.Async.dll": {
-            "related": ".xml"
-          }
-        }
-      },
-      "System.Linq.AsyncEnumerable/10.0.2": {
-        "type": "package",
-        "compile": {
-          "lib/net9.0/System.Linq.AsyncEnumerable.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net9.0/System.Linq.AsyncEnumerable.dll": {
-            "related": ".xml"
-          }
-        },
-        "build": {
-          "buildTransitive/net8.0/_._": {}
-        }
-      },
-      "System.Numerics.Tensors/10.0.5": {
-        "type": "package",
-        "compile": {
-          "lib/net9.0/System.Numerics.Tensors.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net9.0/System.Numerics.Tensors.dll": {
-            "related": ".xml"
-          }
-        },
-        "build": {
-          "buildTransitive/net8.0/_._": {}
-        }
-      },
-      "System.Text.Encodings.Web/10.0.4": {
-        "type": "package",
-        "compile": {
-          "lib/net9.0/System.Text.Encodings.Web.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "runtimes/win/lib/net9.0/System.Text.Encodings.Web.dll": {
-            "related": ".xml"
-          }
-        },
-        "build": {
-          "buildTransitive/net8.0/_._": {}
         }
       },
       "System.Text.Json/10.0.4": {
@@ -964,57 +666,6 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "Microsoft.NET.ILLink.Tasks/9.0.18": {
-      "sha512": "ztGVXB28bi8SeplFmAx+4MkqP1ieA4UNzj/M3qyyz5tLa37Ln8x8LuaXdxzzoOdaucjQBKXSdCMFSbpQaNGIEg==",
-      "type": "package",
-      "path": "microsoft.net.illink.tasks/9.0.18",
-      "hasTools": true,
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "Icon.png",
-        "LICENSE.TXT",
-        "Sdk/Sdk.props",
-        "THIRD-PARTY-NOTICES.TXT",
-        "analyzers/dotnet/cs/ILLink.CodeFixProvider.dll",
-        "analyzers/dotnet/cs/ILLink.RoslynAnalyzer.dll",
-        "build/Microsoft.NET.ILLink.Analyzers.props",
-        "build/Microsoft.NET.ILLink.Tasks.props",
-        "build/Microsoft.NET.ILLink.targets",
-        "microsoft.net.illink.tasks.9.0.18.nupkg.sha512",
-        "microsoft.net.illink.tasks.nuspec",
-        "tools/net472/ILLink.Tasks.dll",
-        "tools/net472/ILLink.Tasks.dll.config",
-        "tools/net472/Mono.Cecil.Mdb.dll",
-        "tools/net472/Mono.Cecil.Pdb.dll",
-        "tools/net472/Mono.Cecil.Rocks.dll",
-        "tools/net472/Mono.Cecil.dll",
-        "tools/net472/Sdk/Sdk.props",
-        "tools/net472/System.Buffers.dll",
-        "tools/net472/System.Collections.Immutable.dll",
-        "tools/net472/System.Memory.dll",
-        "tools/net472/System.Numerics.Vectors.dll",
-        "tools/net472/System.Reflection.Metadata.dll",
-        "tools/net472/System.Runtime.CompilerServices.Unsafe.dll",
-        "tools/net472/build/Microsoft.NET.ILLink.Analyzers.props",
-        "tools/net472/build/Microsoft.NET.ILLink.Tasks.props",
-        "tools/net472/build/Microsoft.NET.ILLink.targets",
-        "tools/net9.0/ILLink.Tasks.deps.json",
-        "tools/net9.0/ILLink.Tasks.dll",
-        "tools/net9.0/Mono.Cecil.Mdb.dll",
-        "tools/net9.0/Mono.Cecil.Pdb.dll",
-        "tools/net9.0/Mono.Cecil.Rocks.dll",
-        "tools/net9.0/Mono.Cecil.dll",
-        "tools/net9.0/Sdk/Sdk.props",
-        "tools/net9.0/build/Microsoft.NET.ILLink.Analyzers.props",
-        "tools/net9.0/build/Microsoft.NET.ILLink.Tasks.props",
-        "tools/net9.0/build/Microsoft.NET.ILLink.targets",
-        "tools/net9.0/illink.deps.json",
-        "tools/net9.0/illink.dll",
-        "tools/net9.0/illink.runtimeconfig.json",
-        "useSharedDesignerContext.txt"
-      ]
-    },
     "System.Diagnostics.DiagnosticSource/10.0.5": {
       "sha512": "CCbzHQ26L3jskdwHh+4bxxW84lUMIrAAmeSlpO69AlrQV0DKbj1/I+feLaLSuZeqXPr9UlSy0OcgZoXOk2a6/g==",
       "type": "package",
@@ -1308,21 +959,20 @@
   "projectFileDependencyGroups": {
     "net9.0": [
       "LLamaSharp >= 0.27.0",
-      "LLamaSharp.Backend.Cuda12 >= 0.27.0",
-      "Microsoft.NET.ILLink.Tasks >= 9.0.18"
+      "LLamaSharp.Backend.Cuda12 >= 0.27.0"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\alexs\\.nuget\\packages\\": {}
+    "C:\\Users\\alexs\\.nuget\\packages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj",
+      "projectUniqueName": "X:\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj",
       "projectName": "SyrlasAIEngine",
-      "projectPath": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj",
-      "packagesPath": "C:\\Users\\alexs\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\obj\\",
+      "projectPath": "X:\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj",
+      "packagesPath": "C:\\Users\\alexs\\.nuget\\packages",
+      "outputPath": "X:\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\alexs\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -1363,12 +1013,6 @@
           "LLamaSharp.Backend.Cuda12": {
             "target": "Package",
             "version": "[0.27.0, )"
-          },
-          "Microsoft.NET.ILLink.Tasks": {
-            "suppressParent": "All",
-            "target": "Package",
-            "version": "[9.0.18, )",
-            "autoReferenced": true
           }
         },
         "imports": [
@@ -1382,31 +1026,12 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "downloadDependencies": [
-          {
-            "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
-            "version": "[9.0.18, 9.0.18]"
-          },
-          {
-            "name": "Microsoft.NETCore.App.Runtime.win-x64",
-            "version": "[9.0.18, 9.0.18]"
-          },
-          {
-            "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
-            "version": "[9.0.18, 9.0.18]"
-          }
-        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.316/PortableRuntimeIdentifierGraph.json"
-      }
-    },
-    "runtimes": {
-      "win-x64": {
-        "#import": []
       }
     }
   }

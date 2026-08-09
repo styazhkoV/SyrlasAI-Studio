@@ -264,3 +264,15 @@ C:\Users\alexs\SyrlasStudio\SyrlasAIEngine\bin\Debug\net9.0\zh-Hant\Microsoft.Co
 C:\Users\alexs\SyrlasStudio\SyrlasAIEngine\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
 C:\Users\alexs\SyrlasStudio\SyrlasAIEngine\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\Users\alexs\SyrlasStudio\SyrlasAIEngine\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+X:\SyrlasStudio\SyrlasAIEngine\obj\Debug\net9.0\SyrlasAIEngine.csproj.AssemblyReference.cache
+X:\SyrlasStudio\SyrlasAIEngine\obj\Debug\net9.0\rpswa.dswa.cache.json
+X:\SyrlasStudio\SyrlasAIEngine\obj\Debug\net9.0\SyrlasAIEngine.GeneratedMSBuildEditorConfig.editorconfig
+X:\SyrlasStudio\SyrlasAIEngine\obj\Debug\net9.0\SyrlasAIEngine.AssemblyInfoInputs.cache
+X:\SyrlasStudio\SyrlasAIEngine\obj\Debug\net9.0\SyrlasAIEngine.AssemblyInfo.cs
+X:\SyrlasStudio\SyrlasAIEngine\obj\Debug\net9.0\SyrlasAIEngine.csproj.CoreCompileInputs.cache
+X:\SyrlasStudio\SyrlasAIEngine\obj\Debug\net9.0\SyrlasAIEngine.MvcApplicationPartsAssemblyInfo.cs
+X:\SyrlasStudio\SyrlasAIEngine\obj\Debug\net9.0\SyrlasAIEngine.MvcApplicationPartsAssemblyInfo.cache
+X:\SyrlasStudio\SyrlasAIEngine\obj\Debug\net9.0\SyrlasAIEngine.sourcelink.json
+X:\SyrlasStudio\SyrlasAIEngine\obj\Debug\net9.0\SyrlasAIEngine.dll
+X:\SyrlasStudio\SyrlasAIEngine\obj\Debug\net9.0\refint\SyrlasAIEngine.dll
+X:\SyrlasStudio\SyrlasAIEngine\obj\Debug\net9.0\SyrlasAIEngine.pdb

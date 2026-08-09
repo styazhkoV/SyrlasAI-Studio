@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "z4cxXsSyRa4=",
+  "dgSpecHash": "3hpeewuSV+M=",
   "success": true,
-  "projectFilePath": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasStudio\\SyrlasStudio\\SyrlasStudio.csproj",
+  "projectFilePath": "X:\\SyrlasStudio\\SyrlasStudio\\SyrlasStudio\\SyrlasStudio.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\alexs\\.nuget\\packages\\communitytoolkit.highperformance\\8.4.2\\communitytoolkit.highperformance.8.4.2.nupkg.sha512",
     "C:\\Users\\alexs\\.nuget\\packages\\communitytoolkit.mvvm\\8.4.2\\communitytoolkit.mvvm.8.4.2.nupkg.sha512",
@@ -34,7 +34,6 @@
     "C:\\Users\\alexs\\.nuget\\packages\\microsoft.maui.graphics\\9.0.120\\microsoft.maui.graphics.9.0.120.nupkg.sha512",
     "C:\\Users\\alexs\\.nuget\\packages\\microsoft.maui.graphics.win2d.winui.desktop\\9.0.120\\microsoft.maui.graphics.win2d.winui.desktop.9.0.120.nupkg.sha512",
     "C:\\Users\\alexs\\.nuget\\packages\\microsoft.maui.resizetizer\\9.0.120\\microsoft.maui.resizetizer.9.0.120.nupkg.sha512",
-    "C:\\Users\\alexs\\.nuget\\packages\\microsoft.net.illink.tasks\\9.0.18\\microsoft.net.illink.tasks.9.0.18.nupkg.sha512",
     "C:\\Users\\alexs\\.nuget\\packages\\microsoft.web.webview2\\1.0.3179.45\\microsoft.web.webview2.1.0.3179.45.nupkg.sha512",
     "C:\\Users\\alexs\\.nuget\\packages\\microsoft.windows.sdk.buildtools\\10.0.22621.756\\microsoft.windows.sdk.buildtools.10.0.22621.756.nupkg.sha512",
     "C:\\Users\\alexs\\.nuget\\packages\\microsoft.windowsappsdk\\1.7.250909003\\microsoft.windowsappsdk.1.7.250909003.nupkg.sha512",

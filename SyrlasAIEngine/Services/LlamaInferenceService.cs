@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LLama;
 using LLama.Common;
+using LLama.Native;
 using LLama.Sampling;
 
 namespace SyrlasAIEngine.Services
@@ -19,7 +20,10 @@ namespace SyrlasAIEngine.Services
 
         public bool IsLoaded => _isLoaded;
 
-        public async Task LoadModelAsync(string modelPath, int contextSize = 4096, int gpuLayerCount = 20)
+        public async Task LoadModelAsync(
+            string modelPath, 
+            int contextSize = 2048, 
+            int gpuLayerCount = 99)          // ← теперь по умолчанию все слои
         {
             await _lock.WaitAsync();
             try
@@ -28,9 +32,27 @@ namespace SyrlasAIEngine.Services
 
                 var parameters = new ModelParams(modelPath)
                 {
-                    ContextSize = (uint)contextSize,
+                    // GPU
                     GpuLayerCount = gpuLayerCount,
-                    Threads = Math.Max(1, Environment.ProcessorCount - 2)
+
+                    // Контекст
+                    ContextSize = (uint)contextSize,
+
+                    // CPU (Xeon X5660 — 6 физических ядер)
+                    Threads = 6,
+
+                    // Память
+                    UseMemoryLock = true,
+                    UseMemorymap = true,
+
+                    // KV Cache + Flash Attention (важно для скорости)
+                    TypeK = GGMLType.GGML_TYPE_Q8_0,
+                    TypeV = GGMLType.GGML_TYPE_Q8_0,
+                    FlashAttention = false,          // на GTX 1070 часто быстрее false
+                    NoKqvOffload = false,
+
+                    // Батч
+                    BatchSize = 512
                 };
 
                 _weights = await Task.Run(() => LLamaWeights.LoadFromFile(parameters));
@@ -57,9 +79,15 @@ namespace SyrlasAIEngine.Services
             {
                 inferenceParams ??= new InferenceParams
                 {
-                    SamplingPipeline = new DefaultSamplingPipeline { Temperature = 0.2f, TopP = 0.95f },
                     MaxTokens = 2048,
-                    AntiPrompts = new List<string> { "<|im_end|>", "User:" }
+                    AntiPrompts = new List<string> { "<|im_end|>", "<|im_start|>" },
+                    SamplingPipeline = new DefaultSamplingPipeline
+                    {
+                        Temperature = 0.7f,
+                        TopP = 0.9f,
+                        TopK = 40,
+                        RepeatPenalty = 1.15f
+                    }
                 };
 
                 await foreach (var token in _executor.InferAsync(prompt, inferenceParams, cancellationToken))

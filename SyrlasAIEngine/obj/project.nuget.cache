@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "2BG9qxNsU84=",
+  "dgSpecHash": "umBgzWSr9nw=",
   "success": true,
-  "projectFilePath": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj",
+  "projectFilePath": "X:\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\alexs\\.nuget\\packages\\communitytoolkit.highperformance\\8.4.2\\communitytoolkit.highperformance.8.4.2.nupkg.sha512",
     "C:\\Users\\alexs\\.nuget\\packages\\dapper\\2.1.79\\dapper.2.1.79.nupkg.sha512",

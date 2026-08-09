@@ -1,172 +1,312 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using Microsoft.Maui.Controls;
-using SyrlasStudio.Services;
-using SyrlasStudio.Models;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Controls;
+using SyrlasStudio.Models;
+using SyrlasStudio.Services;
 
 namespace SyrlasStudio.ViewModels;
 
-public partial class MainPageViewModel : ObservableObject
+public class MainPageViewModel : INotifyPropertyChanged
 {
     private readonly AgentService _agentService;
-    private readonly ResourceMonitorService _monitorService;
+    private readonly ResourceMonitorService? _resourceMonitor;
     private CancellationTokenSource? _cts;
 
-    // Событие для прокрутки чата вниз
-    public event Action<ChatMessage>? ScrollToRequested;
+    public event Action? ScrollToRequested;
 
-    [ObservableProperty]
-    private ObservableCollection<ChatMessage> _messages = new();
+    public ObservableCollection<ChatMessage> Messages { get; } = new();
+    public ObservableCollection<string> SystemLogs { get; } = new();
 
-    [ObservableProperty]
     private string _userInputText = string.Empty;
+    public string UserInputText
+    {
+        get => _userInputText;
+        set => SetProperty(ref _userInputText, value);
+    }
 
-    [ObservableProperty]
-    private ObservableCollection<string> _systemLogs = new();
+    private bool _isGenerating;
+    public bool IsGenerating
+    {
+        get => _isGenerating;
+        set
+        {
+            if (SetProperty(ref _isGenerating, value))
+            {
+                OnPropertyChanged(nameof(IsNotGenerating));
+            }
+        }
+    }
 
-    // Метрики ресурсов системы и GPU
-    [ObservableProperty]
-    private string _cpuUsageText = "CPU: 0%";
+    public bool IsNotGenerating => !IsGenerating;
 
-    [ObservableProperty]
+    private string _currentSpeedText = "0.0 tok/s";
+    public string CurrentSpeedText
+    {
+        get => _currentSpeedText;
+        set => SetProperty(ref _currentSpeedText, value);
+    }
+
+    private string _cpuUsageText = "0,0%";
+    public string CpuUsageText
+    {
+        get => _cpuUsageText;
+        set => SetProperty(ref _cpuUsageText, value);
+    }
+
     private double _cpuProgress = 0.0;
+    public double CpuProgress
+    {
+        get => _cpuProgress;
+        set => SetProperty(ref _cpuProgress, value);
+    }
 
-    [ObservableProperty]
-    private string _ramUsageText = "RAM: 0 MB";
+    private string _ramUsageText = "0 MB";
+    public string RamUsageText
+    {
+        get => _ramUsageText;
+        set => SetProperty(ref _ramUsageText, value);
+    }
 
-    [ObservableProperty]
     private double _ramProgress = 0.0;
+    public double RamProgress
+    {
+        get => _ramProgress;
+        set => SetProperty(ref _ramProgress, value);
+    }
 
-    [ObservableProperty]
-    private string _diskUsageText = "Disk: 0%";
+    private string _diskUsageText = "0%";
+    public string DiskUsageText
+    {
+        get => _diskUsageText;
+        set => SetProperty(ref _diskUsageText, value);
+    }
 
-    [ObservableProperty]
     private double _diskProgress = 0.0;
+    public double DiskProgress
+    {
+        get => _diskProgress;
+        set => SetProperty(ref _diskProgress, value);
+    }
 
-    [ObservableProperty]
-    private string _vramUsageText = "VRAM: 0 MB";
+    private float _temperature = 0.7f;
+    public float Temperature
+    {
+        get => _temperature;
+        set
+        {
+            if (SetProperty(ref _temperature, value))
+            {
+                OnPropertyChanged(nameof(TemperatureText));
+            }
+        }
+    }
 
-    [ObservableProperty]
-    private double _vramProgress = 0.0;
+    private float _topP = 0.9f;
+    public float TopP
+    {
+        get => _topP;
+        set
+        {
+            if (SetProperty(ref _topP, value))
+            {
+                OnPropertyChanged(nameof(TopPText));
+            }
+        }
+    }
 
-    public MainPageViewModel(AgentService agentService)
+    public string TemperatureText => $"{Temperature:F2}";
+    public string TopPText => $"{TopP:F2}";
+
+    public ICommand SendMessageCommand { get; }
+    public ICommand StopCommand { get; }
+    public ICommand NewChatCommand { get; }
+    public ICommand CopyCodeCommand { get; }
+
+    public MainPageViewModel(AgentService agentService, ResourceMonitorService? resourceMonitor = null)
     {
         _agentService = agentService;
+        _resourceMonitor = resourceMonitor;
 
-        _monitorService = new ResourceMonitorService();
-        _monitorService.MetricsUpdated += OnMetricsUpdated;
+        SendMessageCommand = new Command(async () => await SendMessageAsync());
+        StopCommand = new Command(OnStop);
+        NewChatCommand = new Command(OnNewChat);
+        CopyCodeCommand = new Command<string>(async (code) => await CopyCodeAsync(code));
 
-        Log("Система Syrlas Studio инициализирована.");
-        
-        // Запуск асинхронной инициализации ИИ без блокировки UI
+        if (_resourceMonitor != null)
+        {
+            _resourceMonitor.MetricsUpdated += OnMetricsUpdated;
+        }
+
         _ = InitializeEngineAsync();
+    }
+
+    public MainPageViewModel() : this(new AgentService())
+    {
     }
 
     private void OnMetricsUpdated(double cpuPercent, double ramMb, double diskPercent, double vramMb)
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            CpuUsageText = $"CPU: {cpuPercent:F1}%";
-            CpuProgress = Math.Min(cpuPercent / 100.0, 1.0);
-
-            RamUsageText = $"RAM: {ramMb:F0} MB";
-            RamProgress = Math.Min(ramMb / 16384.0, 1.0); // Шкала на 16 ГБ RAM
-
-            DiskUsageText = $"Disk: {diskPercent:F0}%";
-            DiskProgress = Math.Min(diskPercent / 100.0, 1.0);
-
-            // GTX 1070 имеет 8192 MB VRAM
-            VramUsageText = $"VRAM: {vramMb:F0} MB";
-            VramProgress = Math.Min(vramMb / 8192.0, 1.0);
+            CpuUsageText = $"{cpuPercent:F1}%";
+            CpuProgress = Math.Clamp(cpuPercent / 100.0, 0, 1);
+            RamUsageText = $"{ramMb:F0} MB";
+            // Нормализуем относительно ~16 GB; UI только индикатор
+            RamProgress = Math.Clamp(ramMb / 16384.0, 0, 1);
+            DiskUsageText = $"{diskPercent:F0}%";
+            DiskProgress = Math.Clamp(diskPercent / 100.0, 0, 1);
         });
     }
+
     private async Task InitializeEngineAsync()
     {
+        AddLog("Система Syrlas Studio инициализирована.");
         try
         {
-            await _agentService.InitializeAsync(logMessage => Log(logMessage));
-            Log("Готов к загрузке весов... [Завершено]");
+            await _agentService.InitializeAsync(AddLog);
         }
         catch (Exception ex)
         {
-            Log($"ОШИБКА ДВИЖКА: {ex.Message}");
+            AddLog($"Ошибка инициализации: {ex.Message}");
         }
     }
 
-    public void Log(string message)
-    {
-        string timestamp = DateTime.Now.ToString("HH:mm:ss");
-        string logEntry = $"[{timestamp}] {message}";
-
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-            SystemLogs.Add(logEntry);
-            if (SystemLogs.Count > 50)
-            {
-                SystemLogs.RemoveAt(0);
-            }
-        });
-    }
-
-    [RelayCommand]
     private async Task SendMessageAsync()
     {
-        if (string.IsNullOrWhiteSpace(UserInputText)) return;
+        if (string.IsNullOrWhiteSpace(UserInputText) || IsGenerating) return;
 
-        string prompt = UserInputText;
+        var userText = UserInputText;
         UserInputText = string.Empty;
+        IsGenerating = true;
 
-        var userMsg = new ChatMessage { Text = prompt, IsUser = true, SenderName = "Вы" };
-        Messages.Add(userMsg);
-        ScrollToRequested?.Invoke(userMsg);
-
-        var aiMsg = new ChatMessage { Text = "", IsUser = false, SenderName = "Syrlas AI Assistant" };
-        Messages.Add(aiMsg);
-        ScrollToRequested?.Invoke(aiMsg);
-
-        Log("Запрос отправлен в локальный движок...");
-        
-        _cts?.Cancel();
         _cts = new CancellationTokenSource();
+
+        Messages.Add(new ChatMessage
+        {
+            SenderName = "Вы",
+            Text = userText,
+            IsUser = true
+        });
+
+        var botMessage = new ChatMessage
+        {
+            SenderName = "Syrlas AI Assistant",
+            Text = string.Empty,
+            IsUser = false
+        };
+        Messages.Add(botMessage);
+
+        RequestScroll();
+
+        var stopwatch = Stopwatch.StartNew();
+        int tokenCount = 0;
 
         try
         {
-            await foreach (string token in _agentService.GenerateResponseAsync(prompt, _cts.Token))
+            await foreach (var token in _agentService.GenerateResponseAsync(userText, Temperature, TopP, _cts.Token))
             {
-                aiMsg.Text += token;
+                tokenCount++;
+                botMessage.Text += token;
+
+                // Замер скорости в реальном времени
+                double elapsedSeconds = stopwatch.Elapsed.TotalSeconds;
+                if (elapsedSeconds > 0.1)
+                {
+                    double currentSpeed = tokenCount / elapsedSeconds;
+                    CurrentSpeedText = $"{currentSpeed:F1} tok/s";
+                    botMessage.SpeedText = $"{currentSpeed:F1} tok/s";
+                }
+
+                RequestScroll();
             }
-            Log("Генерация ответа успешно завершена.");
         }
         catch (OperationCanceledException)
         {
-            Log("Прерывание: Операция отменена.");
+            botMessage.Text += " [Генерация остановлена пользователем]";
         }
         catch (Exception ex)
         {
-            Log($"ОШИБКА ДВИЖКА: {ex.Message}");
-            aiMsg.Text += $"\n[Ошибка: {ex.Message}]";
+            botMessage.Text += $"\n[Ошибка генерации: {ex.Message}]";
         }
-    }
-
-    [RelayCommand]
-    private void NewChat()
-    {
-        _cts?.Cancel();
-        Messages.Clear();
-        Log("Начат новый диалог.");
-    }
-
-    [RelayCommand]
-    private async Task CopyCodeAsync(string code)
-    {
-        if (!string.IsNullOrEmpty(code))
+        finally
         {
-            await Clipboard.Default.SetTextAsync(code);
-            Log("Код скопирован в буфер обмена.");
+            stopwatch.Stop();
+            IsGenerating = false;
+
+            // Финальный точный расчет скорости
+            if (stopwatch.Elapsed.TotalSeconds > 0 && tokenCount > 0)
+            {
+                double finalSpeed = tokenCount / stopwatch.Elapsed.TotalSeconds;
+                CurrentSpeedText = $"{finalSpeed:F1} tok/s";
+                botMessage.SpeedText = $"{finalSpeed:F1} tok/s • {tokenCount} токенов за {stopwatch.Elapsed.TotalSeconds:F2}с";
+            }
+
+            _cts?.Dispose();
+            _cts = null;
+            RequestScroll();
         }
+    }
+
+    private void OnStop()
+    {
+        if (IsGenerating && _cts != null && !_cts.IsCancellationRequested)
+        {
+            _cts.Cancel();
+            AddLog("Запрос на остановку генерации выслан.");
+        }
+    }
+
+    private void OnNewChat()
+    {
+        OnStop();
+        Messages.Clear();
+        CurrentSpeedText = "0.0 tok/s";
+        AddLog("Сессия очищена.");
+    }
+
+    private async Task CopyCodeAsync(string? text)
+    {
+        if (!string.IsNullOrEmpty(text))
+        {
+            await Clipboard.Default.SetTextAsync(text);
+        }
+    }
+
+    private void AddLog(string message)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            SystemLogs.Add($"[{DateTime.Now:HH:mm:ss}] {message}");
+        });
+    }
+
+    private void RequestScroll()
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            ScrollToRequested?.Invoke();
+        });
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string? propertyName = null)
+    {
+        if (Equals(storage, value)) return false;
+        storage = value;
+        OnPropertyChanged(propertyName);
+        return true;
+    }
+
+    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

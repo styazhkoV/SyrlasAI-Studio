@@ -6,17 +6,21 @@
              x:Class="SyrlasStudio.MainPage"
              x:DataType="viewModels:MainPageViewModel"
              x:Name="RootPage"
+             NavigationPage.HasNavigationBar="False"
+             Shell.NavBarIsVisible="False"
              BackgroundColor="#18181B">
 
     <Grid ColumnDefinitions="280, *">
 
-        <!-- Левая боковая панель (Сайдбар) -->
+        <!-- ========================================== -->
+        <!-- ЛЕВАЯ ПАНЕЛЬ (САЙДБАР)                     -->
+        <!-- ========================================== -->
         <Grid Grid.Column="0" 
-              RowDefinitions="Auto, Auto, *, Auto, Auto" 
+              BackgroundColor="#202023" 
               Padding="20" 
-              BackgroundColor="#202023">
+              RowDefinitions="Auto, Auto, *, Auto, Auto, Auto">
 
-            <!-- Заголовок приложения -->
+            <!-- 0. Заголовок приложения -->
             <Label Grid.Row="0" 
                    Text="Syrlas Studio" 
                    FontSize="24" 
@@ -24,37 +28,37 @@
                    TextColor="#A78BFA" 
                    Margin="0,0,0,20" />
 
-            <!-- Кнопка Нового чата -->
+            <!-- 1. Новый чат -->
             <Button Grid.Row="1" 
                     Text="+ Новый чат" 
-                    Command="{Binding NewChatCommand}"
+                    Command="{Binding NewChatCommand}" 
                     BackgroundColor="#27272A" 
                     TextColor="White" 
+                    FontAttributes="Bold" 
                     CornerRadius="8" 
                     HeightRequest="44" 
-                    FontAttributes="Bold" 
                     Margin="0,0,0,20" />
 
-            <!-- История сессий -->
+            <!-- 2. История сессий -->
             <VerticalStackLayout Grid.Row="2" Spacing="10">
                 <Label Text="История сессий" 
-                       TextColor="#A1A1AA" 
                        FontSize="13" 
-                       FontAttributes="Bold" />
+                       FontAttributes="Bold" 
+                       TextColor="#A1A1AA" />
                 <Label Text="Сессии отсутствуют" 
-                       TextColor="#52525B" 
                        FontSize="12" 
+                       TextColor="#52525B" 
                        Margin="0,10,0,0" />
             </VerticalStackLayout>
 
-            <!-- Метрики ресурсов (CPU, RAM, Disk) -->
+            <!-- 3. Метрики системных ресурсов -->
             <VerticalStackLayout Grid.Row="3" Spacing="12" Margin="0,10,0,15">
                 
                 <!-- CPU -->
                 <VerticalStackLayout Spacing="4">
                     <Grid ColumnDefinitions="*, Auto">
-                        <Label Grid.Column="0" Text="CPU" TextColor="#A1A1AA" FontSize="11" />
-                        <Label Grid.Column="1" Text="{Binding CpuUsageText}" TextColor="#38BDF8" FontSize="11" FontAttributes="Bold" />
+                        <Label Grid.Column="0" Text="CPU" FontSize="11" TextColor="#A1A1AA" />
+                        <Label Grid.Column="1" Text="{Binding CpuUsageText}" FontSize="11" FontAttributes="Bold" TextColor="#38BDF8" />
                     </Grid>
                     <ProgressBar Progress="{Binding CpuProgress}" ProgressColor="#0EA5E9" HeightRequest="4" />
                 </VerticalStackLayout>
@@ -62,8 +66,8 @@
                 <!-- RAM -->
                 <VerticalStackLayout Spacing="4">
                     <Grid ColumnDefinitions="*, Auto">
-                        <Label Grid.Column="0" Text="RAM" TextColor="#A1A1AA" FontSize="11" />
-                        <Label Grid.Column="1" Text="{Binding RamUsageText}" TextColor="#A78BFA" FontSize="11" FontAttributes="Bold" />
+                        <Label Grid.Column="0" Text="RAM" FontSize="11" TextColor="#A1A1AA" />
+                        <Label Grid.Column="1" Text="{Binding RamUsageText}" FontSize="11" FontAttributes="Bold" TextColor="#A78BFA" />
                     </Grid>
                     <ProgressBar Progress="{Binding RamProgress}" ProgressColor="#8B5CF6" HeightRequest="4" />
                 </VerticalStackLayout>
@@ -71,36 +75,52 @@
                 <!-- Disk -->
                 <VerticalStackLayout Spacing="4">
                     <Grid ColumnDefinitions="*, Auto">
-                        <Label Grid.Column="0" Text="Disk" TextColor="#A1A1AA" FontSize="11" />
-                        <Label Grid.Column="1" Text="{Binding DiskUsageText}" TextColor="#34D399" FontSize="11" FontAttributes="Bold" />
+                        <Label Grid.Column="0" Text="Disk" FontSize="11" TextColor="#A1A1AA" />
+                        <Label Grid.Column="1" Text="{Binding DiskUsageText}" FontSize="11" FontAttributes="Bold" TextColor="#34D399" />
                     </Grid>
                     <ProgressBar Progress="{Binding DiskProgress}" ProgressColor="#10B981" HeightRequest="4" />
                 </VerticalStackLayout>
 
             </VerticalStackLayout>
 
-            <!-- Системный лог -->
-            <Border Grid.Row="4" 
+            <!-- 4. Параметры генерации -->
+            <VerticalStackLayout Grid.Row="4" Spacing="10" Margin="0,0,0,15">
+                <Label Text="ПАРАМЕТРЫ ГЕНЕРАЦИИ" FontSize="11" FontAttributes="Bold" TextColor="#71717A" />
+
+                <!-- Temperature -->
+                <VerticalStackLayout Spacing="4">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Grid.Column="0" Text="Temperature" FontSize="11" TextColor="#A1A1AA" />
+                        <Label Grid.Column="1" Text="{Binding TemperatureText}" FontSize="11" FontAttributes="Bold" TextColor="#A78BFA" />
+                    </Grid>
+                    <Slider Minimum="0.0" Maximum="1.5" Value="{Binding Temperature, Mode=TwoWay}" MinimumTrackColor="#8B5CF6" MaximumTrackColor="#3F3F46" ThumbColor="#A78BFA" />
+                </VerticalStackLayout>
+
+                <!-- Top-P -->
+                <VerticalStackLayout Spacing="4">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Grid.Column="0" Text="Top-P" FontSize="11" TextColor="#A1A1AA" />
+                        <Label Grid.Column="1" Text="{Binding TopPText}" FontSize="11" FontAttributes="Bold" TextColor="#38BDF8" />
+                    </Grid>
+                    <Slider Minimum="0.0" Maximum="1.0" Value="{Binding TopP, Mode=TwoWay}" MinimumTrackColor="#0EA5E9" MaximumTrackColor="#3F3F46" ThumbColor="#38BDF8" />
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
+            <!-- 5. Системный лог -->
+            <Border Grid.Row="5" 
                     BackgroundColor="#18181B" 
                     Stroke="#27272A" 
                     StrokeThickness="1" 
                     StrokeShape="RoundRectangle 8" 
                     Padding="12" 
-                    HeightRequest="160">
+                    HeightRequest="140">
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="СИСТЕМНЫЙ ЛОГ" 
-                           TextColor="#71717A" 
-                           FontSize="11" 
-                           FontAttributes="Bold" />
-                    <ScrollView HeightRequest="120">
+                    <Label Text="СИСТЕМНЫЙ ЛОГ" FontSize="11" FontAttributes="Bold" TextColor="#71717A" />
+                    <ScrollView HeightRequest="100">
                         <CollectionView ItemsSource="{Binding SystemLogs}">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="x:String">
-                                    <Label Text="{Binding .}" 
-                                           TextColor="#A1A1AA" 
-                                           FontFamily="Consolas" 
-                                           FontSize="11" 
-                                           Margin="0,2" />
+                                    <Label Text="{Binding .}" FontSize="11" FontFamily="Consolas" TextColor="#A1A1AA" Margin="0,2" />
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
@@ -109,63 +129,80 @@
             </Border>
         </Grid>
 
-        <!-- Правая область (Чат и Поле ввода) -->
-        <Grid Grid.Column="1" RowDefinitions="Auto, *, Auto" Padding="25">
+        <!-- ========================================== -->
+        <!-- ПРАВАЯ ОБЛАСТЬ (ЧАТ И ВВОД)                -->
+        <!-- ========================================== -->
+        <Grid Grid.Column="1" Padding="25" RowDefinitions="Auto, *, Auto">
 
-            <!-- Шапка чата -->
-            <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,15">
-                <Label Grid.Column="0" 
-                       Text="Syrlas AI Assistant" 
-                       FontSize="18" 
-                       FontAttributes="Bold" 
-                       TextColor="White" 
-                       VerticalOptions="Center" />
-                <Label Grid.Column="1" 
-                       Text="Qwen 2.5 Coder (Local Engine)" 
-                       TextColor="#8B5CF6" 
-                       FontSize="12" 
-                       VerticalOptions="Center" />
+            <!-- 0. Шапка чата -->
+            <Grid Grid.Row="0" ColumnDefinitions="*, Auto, Auto" Margin="0,0,0,15">
+                <Label Grid.Column="0" Text="Syrlas AI Assistant" FontSize="18" FontAttributes="Bold" TextColor="White" VerticalOptions="Center" />
+
+                <!-- Индикатор скорости генерации -->
+                <Border Grid.Column="1" 
+                        BackgroundColor="#27272A" 
+                        Stroke="#3F3F46" 
+                        StrokeThickness="1" 
+                        StrokeShape="RoundRectangle 6" 
+                        Padding="8,4" 
+                        Margin="0,0,12,0" 
+                        VerticalOptions="Center">
+                    <HorizontalStackLayout Spacing="6">
+                        <Label Text="⚡" FontSize="11" VerticalOptions="Center" />
+                        <Label Text="{Binding CurrentSpeedText}" FontSize="11" FontAttributes="Bold" TextColor="#34D399" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </Border>
+
+                <Label Grid.Column="2" Text="Qwen 2.5 1.5B (Local Engine)" FontSize="12" TextColor="#8B5CF6" VerticalOptions="Center" />
             </Grid>
 
-            <!-- Список сообщений -->
+            <!-- 1. Список сообщений -->
             <CollectionView Grid.Row="1" 
-                            ItemsSource="{Binding Messages}" 
                             x:Name="MessagesCollectionView" 
+                            ItemsSource="{Binding Messages}" 
                             SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:ChatMessage">
-                        <VerticalStackLayout Spacing="6" Margin="0,10">
+                        <VerticalStackLayout Margin="0,10" Spacing="6">
 
-                            <!-- Имя отправителя -->
-                            <Label Text="{Binding SenderName}" 
-                                   TextColor="#A1A1AA" 
-                                   FontSize="12" 
-                                   FontAttributes="Bold" />
+                            <!-- Отправитель -->
+                            <Label Text="{Binding SenderName}" FontSize="12" FontAttributes="Bold" TextColor="#A1A1AA" />
 
                             <!-- Пузырь сообщения -->
-                            <Border Stroke="Transparent" 
-                                    BackgroundColor="#27272A" 
+                            <Border BackgroundColor="#27272A" 
+                                    Stroke="Transparent" 
                                     StrokeShape="RoundRectangle 12" 
                                     Padding="14,12" 
                                     HorizontalOptions="Start">
                                 <VerticalStackLayout Spacing="8">
-                                    <Label Text="{Binding Text}" 
-                                           TextColor="White" 
-                                           FontSize="14" 
-                                           LineBreakMode="WordWrap" />
+                                    
+                                    <!-- Текст сообщения -->
+                                    <Label Text="{Binding Text}" FontSize="14" TextColor="White" LineBreakMode="WordWrap" />
 
-                                    <!-- Кнопка копирования кода -->
-                                    <Button Text="Копировать код"
-                                            Command="{Binding BindingContext.CopyCodeCommand, Source={x:Reference RootPage}}"
-                                            CommandParameter="{Binding Text}"
-                                            IsVisible="{Binding HasCode}"
-                                            BackgroundColor="#3F3F46"
-                                            TextColor="White"
-                                            FontSize="11"
-                                            HeightRequest="30"
-                                            Padding="12,0"
-                                            HorizontalOptions="End"
-                                            CornerRadius="6" />
+                                    <!-- Подвал сообщения -->
+                                    <Grid ColumnDefinitions="*, Auto" Margin="0,4,0,0">
+                                        
+                                        <!-- Метрика скорости генерации -->
+                                        <Label Grid.Column="0" 
+                                               Text="{Binding SpeedText}" 
+                                               IsVisible="{Binding HasSpeedText}" 
+                                               FontSize="11" 
+                                               TextColor="#71717A" 
+                                               VerticalOptions="Center" />
+
+                                        <!-- Кнопка скопировать код -->
+                                        <Button Grid.Column="1" 
+                                                Text="Копировать код" 
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MainPageViewModel}}, Path=CopyCodeCommand}" 
+                                                CommandParameter="{Binding Text}" 
+                                                IsVisible="{Binding HasCode}" 
+                                                BackgroundColor="#3F3F46" 
+                                                TextColor="White" 
+                                                FontSize="11" 
+                                                CornerRadius="6" 
+                                                HeightRequest="28" 
+                                                Padding="10,0" />
+                                    </Grid>
                                 </VerticalStackLayout>
                             </Border>
                         </VerticalStackLayout>
@@ -173,37 +210,49 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <!-- Панель ввода (Белое плавное поле) -->
+            <!-- 2. Панель ввода -->
             <Grid Grid.Row="2" ColumnDefinitions="*, Auto" Margin="0,15,0,0">
 
-                <!-- Контейнер для поля ввода -->
-                <Border Grid.Column="0"
+                <!-- Поле ввода -->
+                <Border Grid.Column="0" 
+                        BackgroundColor="White" 
                         Stroke="Transparent" 
-                        StrokeThickness="0"
-                        StrokeShape="RoundRectangle 25"
-                        BackgroundColor="White"
+                        StrokeShape="RoundRectangle 25" 
                         Margin="0,0,12,0">
-
-                    <Entry Text="{Binding UserInputText}"
-                           Placeholder="Спросите что-нибудь у Syrlas AI..."
-                           PlaceholderColor="#9CA3AF"
-                           TextColor="#111827"
-                           BackgroundColor="Transparent"
-                           VerticalOptions="Center"
-                           HeightRequest="48"
-                           Margin="16,0" />
+                    <Entry Text="{Binding UserInputText}" 
+                           Placeholder="Спросите что-нибудь у Syrlas AI..." 
+                           PlaceholderColor="#9CA3AF" 
+                           TextColor="#111827" 
+                           BackgroundColor="Transparent" 
+                           HeightRequest="48" 
+                           Margin="16,0" 
+                           VerticalOptions="Center" />
                 </Border>
 
-                <!-- Кнопка Отправить -->
-                <Button Grid.Column="1"
-                        Text="Отправить"
-                        Command="{Binding SendMessageCommand}"
-                        BackgroundColor="#8B5CF6"
-                        TextColor="White"
-                        CornerRadius="24"
-                        HeightRequest="48"
-                        Padding="26,0"
-                        FontAttributes="Bold"
+                <!-- Кнопка "Отправить" -->
+                <Button Grid.Column="1" 
+                        Text="Отправить" 
+                        Command="{Binding SendMessageCommand}" 
+                        IsVisible="{Binding IsNotGenerating}" 
+                        BackgroundColor="#8B5CF6" 
+                        TextColor="White" 
+                        FontAttributes="Bold" 
+                        CornerRadius="24" 
+                        HeightRequest="48" 
+                        Padding="26,0" 
+                        VerticalOptions="Center" />
+
+                <!-- Кнопка "Остановить" -->
+                <Button Grid.Column="1" 
+                        Text="Остановить" 
+                        Command="{Binding StopCommand}" 
+                        IsVisible="{Binding IsGenerating}" 
+                        BackgroundColor="#EF4444" 
+                        TextColor="White" 
+                        FontAttributes="Bold" 
+                        CornerRadius="24" 
+                        HeightRequest="48" 
+                        Padding="26,0" 
                         VerticalOptions="Center" />
             </Grid>
         </Grid>

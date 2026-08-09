@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\alexs\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj": {}
+    "X:\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj": {}
   },
   "projects": {
-    "C:\\Users\\alexs\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj": {
+    "X:\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj",
+        "projectUniqueName": "X:\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj",
         "projectName": "SyrlasAIEngine",
-        "projectPath": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj",
+        "projectPath": "X:\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj",
         "packagesPath": "C:\\Users\\alexs\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\alexs\\SyrlasStudio\\SyrlasAIEngine\\obj\\",
+        "outputPath": "X:\\SyrlasStudio\\SyrlasAIEngine\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\alexs\\AppData\\Roaming\\NuGet\\NuGet.Config"

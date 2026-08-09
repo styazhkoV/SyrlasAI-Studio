@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using SyrlasStudio.ViewModels;
 using SyrlasStudio.Services;
-using SyrlasAIEngine;
 
 namespace SyrlasStudio;
 
@@ -21,14 +20,10 @@ public static class MauiProgram
 
 #if DEBUG
         builder.Logging.AddDebug();
-        System.Diagnostics.Debugger.Launch();
 #endif
 
-        // Регистрация сервисов
-        builder.Services.AddSingleton<LlamaInferenceService>();
         builder.Services.AddSingleton<AgentService>();
-
-        // Регистрация ViewModel и страниц
+        builder.Services.AddSingleton<ResourceMonitorService>();
         builder.Services.AddTransient<MainPageViewModel>();
         builder.Services.AddTransient<MainPage>();
 
