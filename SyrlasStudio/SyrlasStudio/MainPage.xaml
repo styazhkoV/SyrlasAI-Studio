@@ -2,157 +2,106 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:SyrlasStudio.ViewModels"
+             xmlns:models="clr-namespace:SyrlasStudio.Models"
              x:Class="SyrlasStudio.MainPage"
-             BackgroundColor="#131316">
+             x:DataType="vm:MainPageViewModel"
+             Title="Syrlas Studio AI">
 
-    <Grid ColumnDefinitions="280,*">
+    <Grid ColumnDefinitions="300, *" RowDefinitions="*">
 
-        <!-- ЛЕВАЯ ПАНЕЛЬ -->
-        <Border Grid.Column="0" BackgroundColor="#18181C" Stroke="#24242B" StrokeThickness="1">
-            <ScrollView VerticalScrollBarVisibility="Auto">
-                <VerticalStackLayout Padding="16,20,16,20" Spacing="16">
+        <!-- ЛЕВАЯ ПАНЕЛЬ: Параметры, мониторинг и управление -->
+        <ScrollView Grid.Column="0" BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#1E1E1E}" Padding="15">
+            <VerticalStackLayout Spacing="15">
+                
+                <Label Text="Syrlas AI Studio" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" />
 
-                    <Label Text="Syrlas Studio" FontSize="22" FontAttributes="Bold" TextColor="#B388FF"/>
+                <!-- Кнопки управления сессией -->
+                <Button Text="Новый чат" Command="{Binding NewChatCommand}" Style="{StaticResource SecondaryButtonStyle}" />
+                <Button Text="Выгрузить лог" Command="{Binding ExportLogsCommand}" />
 
-                    <Button Text="+ Новый чат" 
-                            Command="{Binding NewChatCommand}"
-                            BackgroundColor="#222228" TextColor="#FFFFFF" FontAttributes="Bold" CornerRadius="8" HeightRequest="42"/>
+                <BoxView HeightRequest="1" Color="Gray" HorizontalOptions="Fill" />
 
-                    <VerticalStackLayout Spacing="6">
-                        <Label Text="История сессий" FontSize="12" FontAttributes="Bold" TextColor="#8E8E93"/>
-                        <Label Text="Сессии отсутствуют" FontSize="11" TextColor="#50505A"/>
-                    </VerticalStackLayout>
+                <!-- Мониторинг ресурсов -->
+                <Label Text="Системные ресурсы" FontAttributes="Bold" FontSize="14" />
+                
+                <Label Text="{Binding CpuUsageText, StringFormat='CPU: {0}'}" FontSize="12" />
+                <ProgressBar Progress="{Binding CpuProgress}" ProgressColor="DeepSkyBlue" />
 
-                    <BoxView HeightRequest="1" Color="#26262E"/>
+                <Label Text="{Binding RamUsageText, StringFormat='RAM: {0}'}" FontSize="12" />
+                <ProgressBar Progress="{Binding RamProgress}" ProgressColor="MediumSpringGreen" />
 
-                    <!-- Монитор ресурсов -->
-                    <VerticalStackLayout Spacing="10">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="CPU" FontSize="11" TextColor="#8E8E93"/>
-                            <Label Grid.Column="1" Text="{Binding CpuUsageText}" FontSize="11" FontAttributes="Bold" TextColor="#00E5FF"/>
+                <Label Text="{Binding DiskUsageText, StringFormat='Диск: {0}'}" FontSize="12" />
+                <ProgressBar Progress="{Binding DiskProgress}" ProgressColor="Orange" />
+
+                <!-- Исправлено: TextColor вместо ForegroundColor -->
+                <Label Text="{Binding CurrentSpeedText, StringFormat='Скорость: {0}'}" FontAttributes="Bold" FontSize="13" TextColor="SlateGray" />
+
+                <BoxView HeightRequest="1" Color="Gray" HorizontalOptions="Fill" />
+
+                <!-- Настройки генерации -->
+                <Label Text="Параметры генерации" FontAttributes="Bold" FontSize="14" />
+
+                <StackLayout Orientation="Horizontal">
+                    <Label Text="RAG / Поиск:" VerticalOptions="Center" />
+                    <Switch IsToggled="{Binding IsWebSearchEnabled}" HorizontalOptions="EndAndExpand" />
+                </StackLayout>
+
+                <Label Text="{Binding TemperatureText, StringFormat='Temperature: {0}'}" FontSize="12" />
+                <Slider Minimum="0.0" Maximum="2.0" Value="{Binding Temperature}" />
+
+                <Label Text="{Binding TopPText, StringFormat='Top-P: {0}'}" FontSize="12" />
+                <Slider Minimum="0.0" Maximum="1.0" Value="{Binding TopP}" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- ПРАВАЯ ПАНЕЛЬ: Чат и ввод сообщений -->
+        <Grid Grid.Column="1" RowDefinitions="*, Auto" Padding="15" RowSpacing="10">
+
+            <!-- Список сообщений -->
+            <CollectionView x:Name="MessagesCollectionView"
+                            Grid.Row="0"
+                            ItemsSource="{Binding Messages}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ChatMessage">
+                        <Grid Padding="8" Margin="0,4">
+                            <Frame CornerRadius="10" 
+                                   Padding="12"
+                                   HasShadow="False"
+                                   BackgroundColor="{Binding IsUser, Converter={StaticResource BoolToColorConverter}, FallbackValue='#2A2A2A'}">
+                                <VerticalStackLayout Spacing="4">
+                                    <!-- Исправлено: TextColor вместо ForegroundColor -->
+                                    <Label Text="{Binding SenderName}" FontAttributes="Bold" FontSize="12" TextColor="Gray" />
+                                    <Label Text="{Binding Text}" FontSize="14" LineBreakMode="WordWrap" />
+                                    <!-- Исправлено: TextColor вместо ForegroundColor -->
+                                    <Label Text="{Binding SpeedText}" FontSize="10" TextColor="DarkGray" HorizontalOptions="End" IsVisible="{Binding SpeedText, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+                                </VerticalStackLayout>
+                            </Frame>
                         </Grid>
-                        <ProgressBar Progress="{Binding CpuProgress}" ProgressColor="#00E5FF" HeightRequest="4"/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="RAM" FontSize="11" TextColor="#8E8E93"/>
-                            <Label Grid.Column="1" Text="{Binding RamUsageText}" FontSize="11" FontAttributes="Bold" TextColor="#B388FF"/>
-                        </Grid>
-                        <ProgressBar Progress="{Binding RamProgress}" ProgressColor="#B388FF" HeightRequest="4"/>
+            <!-- Область ввода сообщения -->
+            <Grid Grid.Row="1" ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8">
+                <Entry Grid.Column="0" 
+                       Placeholder="Введите запрос к системному аналитику..." 
+                       Text="{Binding UserInputText, Mode=TwoWay}"
+                       ReturnCommand="{Binding SendMessageCommand}" />
 
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Disk" FontSize="11" TextColor="#8E8E93"/>
-                            <Label Grid.Column="1" Text="{Binding DiskUsageText}" FontSize="11" FontAttributes="Bold" TextColor="#00E676"/>
-                        </Grid>
-                        <ProgressBar Progress="{Binding DiskProgress}" ProgressColor="#00E676" HeightRequest="4"/>
-                    </VerticalStackLayout>
-
-                    <BoxView HeightRequest="1" Color="#26262E"/>
-
-                    <!-- Параметры генерации -->
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="ПАРАМЕТРЫ ГЕНЕРАЦИИ" FontSize="11" FontAttributes="Bold" TextColor="#8E8E93"/>
-
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Temperature" FontSize="11" TextColor="#8E8E93"/>
-                            <Label Grid.Column="1" Text="{Binding TemperatureText}" FontSize="11" FontAttributes="Bold" TextColor="#B388FF"/>
-                        </Grid>
-                        <Slider Value="{Binding Temperature, Mode=TwoWay}" Minimum="0.1" Maximum="1.5" MinimumTrackColor="#B388FF"/>
-
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Top-P" FontSize="11" TextColor="#8E8E93"/>
-                            <Label Grid.Column="1" Text="{Binding TopPText}" FontSize="11" FontAttributes="Bold" TextColor="#00E5FF"/>
-                        </Grid>
-                        <Slider Value="{Binding TopP, Mode=TwoWay}" Minimum="0.1" Maximum="1.0" MinimumTrackColor="#00E5FF"/>
-                    </VerticalStackLayout>
-
-                    <!-- СИСТЕМНЫЙ ЛОГ -->
-                    <Border BackgroundColor="#111114" Stroke="#222228" StrokeThickness="1" StrokeShape="RoundRectangle 8" HeightRequest="150" Padding="8">
-                        <Grid RowDefinitions="Auto,*">
-                            <Grid ColumnDefinitions="*,Auto" Margin="2,0,0,6">
-                                <Label Text="СИСТЕМНЫЙ ЛОГ" FontSize="10" FontAttributes="Bold" TextColor="#7C7C85" VerticalOptions="Center"/>
-                                <Button Grid.Column="1" Text="💾 Выгрузить" Command="{Binding ExportLogsCommand}" FontSize="10" Padding="6,2" HeightRequest="24" BackgroundColor="#22222B" TextColor="#B388FF" CornerRadius="4"/>
-                            </Grid>
-                            <CollectionView Grid.Row="1" ItemsSource="{Binding SystemLogs}">
-                                <CollectionView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Label Text="{Binding .}" FontSize="10" TextColor="#00E676" FontFamily="Consolas" LineBreakMode="WordWrap" Margin="0,1"/>
-                                    </DataTemplate>
-                                </CollectionView.ItemTemplate>
-                            </CollectionView>
-                        </Grid>
-                    </Border>
-
-                </VerticalStackLayout>
-            </ScrollView>
-        </Border>
-
-        <!-- ПРАВАЯ ОБЛАСТЬ ЧАТА -->
-        <Grid Grid.Column="1" RowDefinitions="Auto,*,Auto" Padding="20">
-
-            <!-- Шапка чата -->
-            <Grid ColumnDefinitions="*,Auto">
-                <Label Text="Syrlas AI Assistant" FontSize="20" FontAttributes="Bold" TextColor="#FFFFFF"/>
-                <HorizontalStackLayout Grid.Column="1" Spacing="10">
-                    <Border BackgroundColor="#1C2822" Stroke="#264835" StrokeShape="RoundRectangle 12" Padding="8,4">
-                        <Label Text="{Binding CurrentSpeedText}" FontSize="12" TextColor="#00E676" FontAttributes="Bold"/>
-                    </Border>
-                    <Label Text="Qwen 2.5 1.5B (Local Engine)" FontSize="12" TextColor="#B388FF" VerticalOptions="Center"/>
-                </HorizontalStackLayout>
-            </Grid>
-
-            <!-- Чат -->
-            <ScrollView Grid.Row="1" Margin="0,15,0,15">
-                <CollectionView ItemsSource="{Binding Messages}">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <VerticalStackLayout Spacing="4" Margin="0,0,0,16">
-                                <Label Text="{Binding SenderName}" FontSize="11" TextColor="#7C7C85" FontAttributes="Bold"/>
-                                <Border BackgroundColor="#1E1E24" Stroke="#2A2A33" StrokeShape="RoundRectangle 8" Padding="12">
-                                    <VerticalStackLayout Spacing="4">
-                                        <Label Text="{Binding Text}" FontSize="13" TextColor="#E0E0E8" LineBreakMode="WordWrap"/>
-                                        <Label Text="{Binding SpeedText}" FontSize="10" TextColor="#60606A" HorizontalOptions="End"/>
-                                    </VerticalStackLayout>
-                                </Border>
-                            </VerticalStackLayout>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </ScrollView>
-
-            <!-- Панель ввода с тумблером Интернета -->
-            <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
-
-                <!-- Переключатель сети -->
-                <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
-                    <Switch IsToggled="{Binding IsWebSearchEnabled}" ThumbColor="#B388FF" OnColor="#3F2B68"/>
-                    <Label Text="🌐 Сеть" FontSize="12" TextColor="#8E8E93" VerticalOptions="Center"/>
-                </HorizontalStackLayout>
-
-                <!-- Поле ввода -->
-                <Border Grid.Column="1" BackgroundColor="#1E1E24" Stroke="#2A2A33" StrokeShape="RoundRectangle 20" Padding="12,0">
-                    <Entry Text="{Binding UserInputText, Mode=TwoWay}" 
-                           Placeholder="Спросите что-нибудь у Syrlas AI..." 
-                           PlaceholderColor="#60606A" 
-                           TextColor="#FFFFFF" 
-                           FontSize="13" 
-                           ReturnCommand="{Binding SendMessageCommand}" 
-                           ReturnKeyType="Send" 
-                           HeightRequest="44"/>
-                </Border>
-
-                <!-- Кнопки управления -->
-                <Button Grid.Column="2" 
+                <Button Grid.Column="1" 
                         Text="Отправить" 
-                        Command="{Binding SendMessageCommand}" 
-                        IsVisible="{Binding IsNotGenerating}" 
-                        BackgroundColor="#B388FF" TextColor="#FFFFFF" CornerRadius="20" Padding="20,0"/>
+                        Command="{Binding SendMessageCommand}"
+                        IsEnabled="{Binding IsNotGenerating}" />
 
                 <Button Grid.Column="2" 
-                        Text="Остановить" 
-                        Command="{Binding StopCommand}" 
-                        IsVisible="{Binding IsGenerating}" 
-                        BackgroundColor="#FF5252" TextColor="#FFFFFF" CornerRadius="20" Padding="20,0"/>
+                        Text="Стоп" 
+                        Command="{Binding StopCommand}"
+                        IsEnabled="{Binding IsGenerating}"
+                        BackgroundColor="IndianRed" />
             </Grid>
+
         </Grid>
     </Grid>
+
 </ContentPage>

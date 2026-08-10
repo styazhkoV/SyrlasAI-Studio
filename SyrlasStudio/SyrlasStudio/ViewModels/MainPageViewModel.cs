@@ -11,14 +11,16 @@ using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using SyrlasStudio.Models;
 using SyrlasStudio.Services;
+using SyrlasAIEngine.Services; // Подключение движка
 
 namespace SyrlasStudio.ViewModels;
 
 public class MainPageViewModel : INotifyPropertyChanged
 {
+    private readonly LlamaInferenceService _llamaService;
+    private readonly PromptFactory _promptFactory;
     private readonly AgentService _agentService;
     private readonly ResourceMonitorService? _resourceMonitor;
-    private readonly WebSearchService _webSearchService;
     private CancellationTokenSource? _cts;
 
     public event Action? ScrollToRequested;
@@ -48,7 +50,6 @@ public class MainPageViewModel : INotifyPropertyChanged
 
     public bool IsNotGenerating => !IsGenerating;
 
-    // Флаг поиска в сети
     private bool _isWebSearchEnabled = true;
     public bool IsWebSearchEnabled
     {
@@ -139,11 +140,14 @@ public class MainPageViewModel : INotifyPropertyChanged
     public ICommand NewChatCommand { get; }
     public ICommand ExportLogsCommand { get; }
 
-    public MainPageViewModel(AgentService agentService, ResourceMonitorService? resourceMonitor = null)
+    public MainPageViewModel(ResourceMonitorService? resourceMonitor = null)
     {
-        _agentService = agentService;
         _resourceMonitor = resourceMonitor;
-        _webSearchService = new WebSearchService();
+        _llamaService = new LlamaInferenceService();
+        _promptFactory = new PromptFactory();
+        
+        // AgentService принимает LlamaInferenceService, PromptFactory и RagService[cite: 27]
+        _agentService = new AgentService(_llamaService, _promptFactory, null!);
 
         SendMessageCommand = new Command(async () => await SendMessageAsync());
         StopCommand = new Command(OnStop);
@@ -156,10 +160,6 @@ public class MainPageViewModel : INotifyPropertyChanged
         }
 
         _ = InitializeEngineAsync();
-    }
-
-    public MainPageViewModel() : this(new AgentService())
-    {
     }
 
     private void OnMetricsUpdated(double cpuPercent, double ramMb, double diskPercent, double vramMb)
@@ -180,11 +180,20 @@ public class MainPageViewModel : INotifyPropertyChanged
         AddLog("Инициализация Syrlas Studio Engine...");
         try
         {
-            await _agentService.InitializeAsync(AddLog);
+            var modelPath = Path.Combine(FileSystem.AppDataDirectory, "qwen2.5-1.5b-instruct.gguf");
+            if (!File.Exists(modelPath))
+            {
+                modelPath = "qwen2.5-1.5b-instruct.gguf";
+            }
+
+            AddLog($"Загрузка модели из: {modelPath}");
+            // Загрузка модели в память через LlamaInferenceService[cite: 28]
+            await _llamaService.LoadModelAsync(modelPath, contextSize: 4096, gpuLayerCount: 99);
+            AddLog("Модель успешно загружена в VRAM.");
         }
         catch (Exception ex)
         {
-            AddLog($"Ошибка инициализации: {ex.Message}");
+            AddLog($"Ошибка инициализации модели: {ex.Message}");
         }
     }
 
@@ -214,30 +223,14 @@ public class MainPageViewModel : INotifyPropertyChanged
         Messages.Add(botMessage);
         RequestScroll();
 
-        var promptToEngine = userText;
-
-        // Поиск в Интернете
-        if (IsWebSearchEnabled)
-        {
-            AddLog($"Поиск информации в сети для: \"{userText}\"...");
-            var searchResults = await _webSearchService.SearchAsync(userText);
-            if (!string.IsNullOrWhiteSpace(searchResults))
-            {
-                AddLog("Данные из сети получены и переданы модели.");
-                promptToEngine = $"[Информация из Интернета]:\n{searchResults}\n\n[Вопрос пользователя]: {userText}";
-            }
-            else
-            {
-                AddLog("Результаты в сети не найдены, используем базовые знания.");
-            }
-        }
-
         var stopwatch = Stopwatch.StartNew();
         int tokenCount = 0;
 
         try
         {
-            await foreach (var token in _agentService.GenerateResponseAsync(promptToEngine, Temperature, TopP, _cts.Token))
+            // Генерация через AgentService с ролью Системного аналитика[cite: 27, 29]
+            var role = AgentRole.SystemAnalyst;
+            await foreach (var token in _agentService.ExecuteTaskAsync(role, userText, useRagContext: IsWebSearchEnabled, _cts.Token))
             {
                 tokenCount++;
                 botMessage.Text += token;

@@ -1,10 +1,7 @@
-﻿global using SyrlasAIEngine.Services;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using SyrlasStudio.ViewModels;
 using SyrlasStudio.Services;
-
-// Разрешаем неоднозначность типов
-using AgentService = SyrlasStudio.Services.AgentService;
+using SyrlasAIEngine.Services;
 
 namespace SyrlasStudio;
 
@@ -25,7 +22,11 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
-        builder.Services.AddSingleton<AgentService>();
+        // Регистрация сервисов AI-движка из библиотеки SyrlasAIEngine
+        builder.Services.AddSingleton<LlamaInferenceService>(); //[cite: 28]
+        builder.Services.AddSingleton<PromptFactory>();         //[cite: 29]
+        builder.Services.AddSingleton<RagService>();            //[cite: 30]
+        builder.Services.AddTransient<AgentService>();          //[cite: 27]
         builder.Services.AddSingleton<ResourceMonitorService>();
         builder.Services.AddTransient<MainPageViewModel>();
         builder.Services.AddTransient<MainPage>();
