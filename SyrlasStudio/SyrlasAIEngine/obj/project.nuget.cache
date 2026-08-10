@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "k2kRou4yVYM=",
+  "dgSpecHash": "gjEwudL7V1w=",
   "success": true,
   "projectFilePath": "X:\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj",
   "expectedPackageFiles": [
@@ -10,7 +10,7 @@
     "C:\\Users\\alexs\\.nuget\\packages\\documentformat.openxml.framework\\3.5.1\\documentformat.openxml.framework.3.5.1.nupkg.sha512",
     "C:\\Users\\alexs\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\alexs\\.nuget\\packages\\llamasharp\\0.27.0\\llamasharp.0.27.0.nupkg.sha512",
-    "C:\\Users\\alexs\\.nuget\\packages\\llamasharp.backend.cpu\\0.13.0\\llamasharp.backend.cpu.0.13.0.nupkg.sha512",
+    "C:\\Users\\alexs\\.nuget\\packages\\llamasharp.backend.cpu\\0.27.0\\llamasharp.backend.cpu.0.27.0.nupkg.sha512",
     "C:\\Users\\alexs\\.nuget\\packages\\microsoft.aspnetcore.jsonpatch\\9.0.18\\microsoft.aspnetcore.jsonpatch.9.0.18.nupkg.sha512",
     "C:\\Users\\alexs\\.nuget\\packages\\microsoft.aspnetcore.mvc.newtonsoftjson\\9.0.18\\microsoft.aspnetcore.mvc.newtonsoftjson.9.0.18.nupkg.sha512",
     "C:\\Users\\alexs\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.18\\microsoft.aspnetcore.openapi.9.0.18.nupkg.sha512",

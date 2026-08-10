@@ -57,9 +57,9 @@
               "target": "Package",
               "version": "[0.27.0, )"
             },
-            "LlamaSharp.Backend.Cpu": {
+            "LLamaSharp.Backend.Cpu": {
               "target": "Package",
-              "version": "[0.13.0, )"
+              "version": "[0.27.0, )"
             },
             "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
               "target": "Package",

@@ -96,104 +96,10 @@
           }
         }
       },
-      "LLamaSharp.Backend.Cpu/0.13.0": {
+      "LLamaSharp.Backend.Cpu/0.27.0": {
         "type": "package",
         "build": {
           "build/netstandard2.0/LLamaSharp.Backend.Cpu.props": {}
-        },
-        "runtimeTargets": {
-          "runtimes/linux-x64/native/avx/libllama.so": {
-            "assetType": "native",
-            "rid": "linux-x64"
-          },
-          "runtimes/linux-x64/native/avx/libllava_shared.so": {
-            "assetType": "native",
-            "rid": "linux-x64"
-          },
-          "runtimes/linux-x64/native/avx2/libllama.so": {
-            "assetType": "native",
-            "rid": "linux-x64"
-          },
-          "runtimes/linux-x64/native/avx2/libllava_shared.so": {
-            "assetType": "native",
-            "rid": "linux-x64"
-          },
-          "runtimes/linux-x64/native/avx512/libllama.so": {
-            "assetType": "native",
-            "rid": "linux-x64"
-          },
-          "runtimes/linux-x64/native/avx512/libllava_shared.so": {
-            "assetType": "native",
-            "rid": "linux-x64"
-          },
-          "runtimes/linux-x64/native/libllama.so": {
-            "assetType": "native",
-            "rid": "linux-x64"
-          },
-          "runtimes/linux-x64/native/libllava_shared.so": {
-            "assetType": "native",
-            "rid": "linux-x64"
-          },
-          "runtimes/osx-arm64/native/ggml-metal.metal": {
-            "assetType": "native",
-            "rid": "osx-arm64"
-          },
-          "runtimes/osx-arm64/native/libllama.dylib": {
-            "assetType": "native",
-            "rid": "osx-arm64"
-          },
-          "runtimes/osx-arm64/native/libllava_shared.dylib": {
-            "assetType": "native",
-            "rid": "osx-arm64"
-          },
-          "runtimes/osx-x64/native/libllama.dylib": {
-            "assetType": "native",
-            "rid": "osx-x64"
-          },
-          "runtimes/osx-x64/native/libllava_shared.dylib": {
-            "assetType": "native",
-            "rid": "osx-x64"
-          },
-          "runtimes/osx-x64/native/rosetta2/libllama.dylib": {
-            "assetType": "native",
-            "rid": "osx-x64"
-          },
-          "runtimes/osx-x64/native/rosetta2/libllava_shared.dylib": {
-            "assetType": "native",
-            "rid": "osx-x64"
-          },
-          "runtimes/win-x64/native/avx/llama.dll": {
-            "assetType": "native",
-            "rid": "win-x64"
-          },
-          "runtimes/win-x64/native/avx/llava_shared.dll": {
-            "assetType": "native",
-            "rid": "win-x64"
-          },
-          "runtimes/win-x64/native/avx2/llama.dll": {
-            "assetType": "native",
-            "rid": "win-x64"
-          },
-          "runtimes/win-x64/native/avx2/llava_shared.dll": {
-            "assetType": "native",
-            "rid": "win-x64"
-          },
-          "runtimes/win-x64/native/avx512/llama.dll": {
-            "assetType": "native",
-            "rid": "win-x64"
-          },
-          "runtimes/win-x64/native/avx512/llava_shared.dll": {
-            "assetType": "native",
-            "rid": "win-x64"
-          },
-          "runtimes/win-x64/native/llama.dll": {
-            "assetType": "native",
-            "rid": "win-x64"
-          },
-          "runtimes/win-x64/native/llava_shared.dll": {
-            "assetType": "native",
-            "rid": "win-x64"
-          }
         }
       },
       "Microsoft.AspNetCore.JsonPatch/9.0.18": {
@@ -1810,40 +1716,106 @@
         "llamasharp.nuspec"
       ]
     },
-    "LLamaSharp.Backend.Cpu/0.13.0": {
-      "sha512": "rIxJGSfjfubQpgjmk17uxBvNsEfswvlSNkUA8/c8Swh/M6LgUNv9Ox8VycQafqgQ4Vx3CygofSUM/HN9dxdrkA==",
+    "LLamaSharp.Backend.Cpu/0.27.0": {
+      "sha512": "fZOfnsWKx/kaOqCMSkZ2w5ww++/YGq56T8PWst0KjtmXQBthNAuE11HIaxMK5TBD0EWqoCxqlC8oVCOssF4+MQ==",
       "type": "package",
-      "path": "llamasharp.backend.cpu/0.13.0",
+      "path": "llamasharp.backend.cpu/0.27.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
+        "LLamaSharpRuntimes/linux-arm64/native/libggml-base.so",
+        "LLamaSharpRuntimes/linux-arm64/native/libggml-cpu.so",
+        "LLamaSharpRuntimes/linux-arm64/native/libggml.so",
+        "LLamaSharpRuntimes/linux-arm64/native/libllama.so",
+        "LLamaSharpRuntimes/linux-arm64/native/libmtmd.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/avx/libggml-base.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/avx/libggml-cpu.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/avx/libggml.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/avx/libllama.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/avx/libmtmd.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/avx2/libggml-base.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/avx2/libggml-cpu.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/avx2/libggml.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/avx2/libllama.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/avx2/libmtmd.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/avx512/libggml-base.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/avx512/libggml-cpu.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/avx512/libggml.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/avx512/libllama.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/avx512/libmtmd.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/noavx/libggml-base.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/noavx/libggml-cpu.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/noavx/libggml.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/noavx/libllama.so",
+        "LLamaSharpRuntimes/linux-musl-x64/native/noavx/libmtmd.so",
+        "LLamaSharpRuntimes/linux-x64/native/avx/libggml-base.so",
+        "LLamaSharpRuntimes/linux-x64/native/avx/libggml-cpu.so",
+        "LLamaSharpRuntimes/linux-x64/native/avx/libggml.so",
+        "LLamaSharpRuntimes/linux-x64/native/avx/libllama.so",
+        "LLamaSharpRuntimes/linux-x64/native/avx/libmtmd.so",
+        "LLamaSharpRuntimes/linux-x64/native/avx2/libggml-base.so",
+        "LLamaSharpRuntimes/linux-x64/native/avx2/libggml-cpu.so",
+        "LLamaSharpRuntimes/linux-x64/native/avx2/libggml.so",
+        "LLamaSharpRuntimes/linux-x64/native/avx2/libllama.so",
+        "LLamaSharpRuntimes/linux-x64/native/avx2/libmtmd.so",
+        "LLamaSharpRuntimes/linux-x64/native/avx512/libggml-base.so",
+        "LLamaSharpRuntimes/linux-x64/native/avx512/libggml-cpu.so",
+        "LLamaSharpRuntimes/linux-x64/native/avx512/libggml.so",
+        "LLamaSharpRuntimes/linux-x64/native/avx512/libllama.so",
+        "LLamaSharpRuntimes/linux-x64/native/avx512/libmtmd.so",
+        "LLamaSharpRuntimes/linux-x64/native/noavx/libggml-base.so",
+        "LLamaSharpRuntimes/linux-x64/native/noavx/libggml-cpu.so",
+        "LLamaSharpRuntimes/linux-x64/native/noavx/libggml.so",
+        "LLamaSharpRuntimes/linux-x64/native/noavx/libllama.so",
+        "LLamaSharpRuntimes/linux-x64/native/noavx/libmtmd.so",
+        "LLamaSharpRuntimes/osx-arm64/native/libggml-base.dylib",
+        "LLamaSharpRuntimes/osx-arm64/native/libggml-blas.dylib",
+        "LLamaSharpRuntimes/osx-arm64/native/libggml-cpu.dylib",
+        "LLamaSharpRuntimes/osx-arm64/native/libggml-metal.dylib",
+        "LLamaSharpRuntimes/osx-arm64/native/libggml.dylib",
+        "LLamaSharpRuntimes/osx-arm64/native/libllama.dylib",
+        "LLamaSharpRuntimes/osx-arm64/native/libmtmd.dylib",
+        "LLamaSharpRuntimes/osx-x64/native/libggml-base.dylib",
+        "LLamaSharpRuntimes/osx-x64/native/libggml-blas.dylib",
+        "LLamaSharpRuntimes/osx-x64/native/libggml-cpu.dylib",
+        "LLamaSharpRuntimes/osx-x64/native/libggml.dylib",
+        "LLamaSharpRuntimes/osx-x64/native/libllama.dylib",
+        "LLamaSharpRuntimes/osx-x64/native/libmtmd.dylib",
+        "LLamaSharpRuntimes/osx-x64/native/rosetta2/libggml-base.dylib",
+        "LLamaSharpRuntimes/osx-x64/native/rosetta2/libggml-blas.dylib",
+        "LLamaSharpRuntimes/osx-x64/native/rosetta2/libggml-cpu.dylib",
+        "LLamaSharpRuntimes/osx-x64/native/rosetta2/libggml.dylib",
+        "LLamaSharpRuntimes/osx-x64/native/rosetta2/libllama.dylib",
+        "LLamaSharpRuntimes/osx-x64/native/rosetta2/libmtmd.dylib",
+        "LLamaSharpRuntimes/win-arm64/native/ggml-base.dll",
+        "LLamaSharpRuntimes/win-arm64/native/ggml-cpu.dll",
+        "LLamaSharpRuntimes/win-arm64/native/ggml.dll",
+        "LLamaSharpRuntimes/win-arm64/native/llama.dll",
+        "LLamaSharpRuntimes/win-arm64/native/mtmd.dll",
+        "LLamaSharpRuntimes/win-x64/native/avx/ggml-base.dll",
+        "LLamaSharpRuntimes/win-x64/native/avx/ggml-cpu.dll",
+        "LLamaSharpRuntimes/win-x64/native/avx/ggml.dll",
+        "LLamaSharpRuntimes/win-x64/native/avx/llama.dll",
+        "LLamaSharpRuntimes/win-x64/native/avx/mtmd.dll",
+        "LLamaSharpRuntimes/win-x64/native/avx2/ggml-base.dll",
+        "LLamaSharpRuntimes/win-x64/native/avx2/ggml-cpu.dll",
+        "LLamaSharpRuntimes/win-x64/native/avx2/ggml.dll",
+        "LLamaSharpRuntimes/win-x64/native/avx2/llama.dll",
+        "LLamaSharpRuntimes/win-x64/native/avx2/mtmd.dll",
+        "LLamaSharpRuntimes/win-x64/native/avx512/ggml-base.dll",
+        "LLamaSharpRuntimes/win-x64/native/avx512/ggml-cpu.dll",
+        "LLamaSharpRuntimes/win-x64/native/avx512/ggml.dll",
+        "LLamaSharpRuntimes/win-x64/native/avx512/llama.dll",
+        "LLamaSharpRuntimes/win-x64/native/avx512/mtmd.dll",
+        "LLamaSharpRuntimes/win-x64/native/noavx/ggml-base.dll",
+        "LLamaSharpRuntimes/win-x64/native/noavx/ggml-cpu.dll",
+        "LLamaSharpRuntimes/win-x64/native/noavx/ggml.dll",
+        "LLamaSharpRuntimes/win-x64/native/noavx/llama.dll",
+        "LLamaSharpRuntimes/win-x64/native/noavx/mtmd.dll",
         "build/netstandard2.0/LLamaSharp.Backend.Cpu.props",
         "icon512.png",
-        "llamasharp.backend.cpu.0.13.0.nupkg.sha512",
-        "llamasharp.backend.cpu.nuspec",
-        "runtimes/linux-x64/native/avx/libllama.so",
-        "runtimes/linux-x64/native/avx/libllava_shared.so",
-        "runtimes/linux-x64/native/avx2/libllama.so",
-        "runtimes/linux-x64/native/avx2/libllava_shared.so",
-        "runtimes/linux-x64/native/avx512/libllama.so",
-        "runtimes/linux-x64/native/avx512/libllava_shared.so",
-        "runtimes/linux-x64/native/libllama.so",
-        "runtimes/linux-x64/native/libllava_shared.so",
-        "runtimes/osx-arm64/native/ggml-metal.metal",
-        "runtimes/osx-arm64/native/libllama.dylib",
-        "runtimes/osx-arm64/native/libllava_shared.dylib",
-        "runtimes/osx-x64/native/libllama.dylib",
-        "runtimes/osx-x64/native/libllava_shared.dylib",
-        "runtimes/osx-x64/native/rosetta2/libllama.dylib",
-        "runtimes/osx-x64/native/rosetta2/libllava_shared.dylib",
-        "runtimes/win-x64/native/avx/llama.dll",
-        "runtimes/win-x64/native/avx/llava_shared.dll",
-        "runtimes/win-x64/native/avx2/llama.dll",
-        "runtimes/win-x64/native/avx2/llava_shared.dll",
-        "runtimes/win-x64/native/avx512/llama.dll",
-        "runtimes/win-x64/native/avx512/llava_shared.dll",
-        "runtimes/win-x64/native/llama.dll",
-        "runtimes/win-x64/native/llava_shared.dll"
+        "llamasharp.backend.cpu.0.27.0.nupkg.sha512",
+        "llamasharp.backend.cpu.nuspec"
       ]
     },
     "Microsoft.AspNetCore.JsonPatch/9.0.18": {
@@ -4762,7 +4734,7 @@
       "Dapper >= 2.1.79",
       "DocumentFormat.OpenXml >= 3.5.1",
       "LLamaSharp >= 0.27.0",
-      "LlamaSharp.Backend.Cpu >= 0.13.0",
+      "LLamaSharp.Backend.Cpu >= 0.27.0",
       "Microsoft.AspNetCore.Mvc.NewtonsoftJson >= 9.0.18",
       "Microsoft.AspNetCore.OpenApi >= 9.0.18",
       "Microsoft.Data.Sqlite >= 10.0.10",
@@ -4830,9 +4802,9 @@
             "target": "Package",
             "version": "[0.27.0, )"
           },
-          "LlamaSharp.Backend.Cpu": {
+          "LLamaSharp.Backend.Cpu": {
             "target": "Package",
-            "version": "[0.13.0, )"
+            "version": "[0.27.0, )"
           },
           "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
             "target": "Package",
