@@ -1,10 +1,3 @@
-yrlasAI-Studio: Полная техническая спецификация и архитектура (Обновленная версия)
-
-PowerShell
-
-dotnet publish "X:\\SyrlasStudio\\SyrlasStudio\\SyrlasStudio\\SyrlasStudio.csproj" -c Release -f net9.0-windows10.0.19041.0 -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true  
- 
-
 1\. Архитектура UI, Инсталлятора и Сборки
 
 Приложение построено как автономная десктопная среда для локального взаимодействия с LLM в едином исполняемом файле (Single-File), что обеспечивается флагом `-p:PublishSingleFile=true` и безопасной распаковкой нативных библиотек (`-p:IncludeNativeLibrariesForSelfExtract=true`), критически важных для работы LLamaSharp и CUDA-бэкендов.
