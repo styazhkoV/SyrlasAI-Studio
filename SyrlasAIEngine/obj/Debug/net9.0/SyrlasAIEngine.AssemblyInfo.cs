@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SyrlasAIEngine")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a3c9e210b43eb67f02585a49f79a5678f76c7dee")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cfa875c9c2f54e376b900c7184192523fbc3bb46")]
 [assembly: System.Reflection.AssemblyProductAttribute("SyrlasAIEngine")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SyrlasAIEngine")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
