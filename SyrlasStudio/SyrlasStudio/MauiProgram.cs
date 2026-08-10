@@ -3,6 +3,9 @@ using Microsoft.Extensions.Logging;
 using SyrlasStudio.ViewModels;
 using SyrlasStudio.Services;
 
+// Разрешаем неоднозначность типов
+using AgentService = SyrlasStudio.Services.AgentService;
+
 namespace SyrlasStudio;
 
 public static class MauiProgram

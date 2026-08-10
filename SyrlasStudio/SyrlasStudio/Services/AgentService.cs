@@ -11,15 +11,16 @@ using LLama.Sampling;
 
 namespace SyrlasStudio.Services;
 
-public class AgentService : IDisposable
+public sealed class AgentService : IDisposable
 {
     private LLamaWeights? _weights;
     private LLamaContext? _context;
     private InteractiveExecutor? _executor;
     private ChatSession? _session;
     private readonly SemaphoreSlim _initLock = new(1, 1);
+    private readonly SemaphoreSlim _inferenceLock = new(1, 1);
+    private bool _disposed;
 
-    // Модель 1.5B (совместима с текущим бэкендом LLamaSharp 0.27)
     private static readonly string[] ModelCandidates =
     [
         @"X:\SyrlasStudio\SyrlasAIEngine\Model\Qwen2.5-1.5B-Instruct-Q4_K_L.gguf",
@@ -43,39 +44,27 @@ public class AgentService : IDisposable
             if (modelPath is null)
             {
                 throw new FileNotFoundException(
-                    "Файл модели не найден. Проверьте каталог SyrlasAIEngine\\Model.");
+                    "Файл модели (.gguf) не найден. Проверьте каталог SyrlasAIEngine\\Model.");
             }
 
             LoadedModelPath = modelPath;
-            logCallback?.Invoke($"Проверка файла весов модели: {Path.GetFileName(modelPath)}");
+            logCallback?.Invoke($"Найдена модель: {Path.GetFileName(modelPath)}");
 
             await Task.Run(() =>
             {
-                logCallback?.Invoke("Загрузка модели (CPU/GPU, безопасный KV-cache)...");
+                logCallback?.Invoke("Загрузка модели в память (CPU/GPU)...");
 
-                // ВАЖНО: квантизация V-cache (Q8_0) требует FlashAttention.
-                // При FlashAttention=false + TypeV=Q8_0 llama.cpp падает с 0xC0000005
-                // без managed-исключения — окно мгновенно закрывается.
                 var parameters = new ModelParams(modelPath)
                 {
-                    // Все слои на GPU (лишние значения обрезаются до n_layer)
                     GpuLayerCount = 99,
-
                     ContextSize = 2048,
-
-                    // Xeon X5660 — 6 физических ядер
                     Threads = 6,
-
-                    // mlock без SeLockMemoryPrivilege на Windows часто падает
                     UseMemoryLock = false,
                     UseMemorymap = true,
-
-                    // F16 KV — стабильно на GTX 1070 без FlashAttention
                     TypeK = GGMLType.GGML_TYPE_F16,
                     TypeV = GGMLType.GGML_TYPE_F16,
                     FlashAttention = false,
                     NoKqvOffload = false,
-
                     BatchSize = 512
                 };
 
@@ -91,8 +80,7 @@ public class AgentService : IDisposable
                 IsInitialized = true;
             }).ConfigureAwait(false);
 
-            logCallback?.Invoke(
-                $"Локальный движок ИИ ({Path.GetFileName(modelPath)}) успешно инициализирован.");
+            logCallback?.Invoke($"Локальный движок ИИ ({Path.GetFileName(modelPath)}) успешно запущен!");
         }
         finally
         {
@@ -102,10 +90,30 @@ public class AgentService : IDisposable
 
     private static string? ResolveModelPath()
     {
+        // 1. Проверка прямых путей
         foreach (var candidate in ModelCandidates)
         {
             if (File.Exists(candidate))
                 return candidate;
+        }
+
+        // 2. Динамический рекурсивный поиск любого .gguf файла
+        string[] searchDirectories =
+        [
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Model"),
+            @"X:\SyrlasStudio\SyrlasAIEngine\Model",
+            @"X:\SyrlasStudio\SyrlasStudio\SyrlasAIEngine\Model",
+            @"X:\SyrlasStudio"
+        ];
+
+        foreach (var dir in searchDirectories)
+        {
+            if (Directory.Exists(dir))
+            {
+                var ggufFiles = Directory.GetFiles(dir, "*.gguf", SearchOption.AllDirectories);
+                if (ggufFiles.Length > 0)
+                    return ggufFiles[0];
+            }
         }
 
         return null;
@@ -123,45 +131,56 @@ public class AgentService : IDisposable
             yield break;
         }
 
-        while (_session.History.Messages.Count > 0 &&
-               _session.History.Messages[^1].AuthorRole == AuthorRole.User)
+        await _inferenceLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
         {
-            _session.History.Messages.RemoveAt(_session.History.Messages.Count - 1);
-        }
-
-        var safeTemperature = Math.Max(0.1f, temperature);
-
-        var inferenceParams = new InferenceParams
-        {
-            MaxTokens = 1024,
-            AntiPrompts = new List<string>
+            while (_session.History.Messages.Count > 0 &&
+                   _session.History.Messages[^1].AuthorRole == AuthorRole.User)
             {
-                "<|im_end|>",
-                "<|im_start|>"
-            },
-            SamplingPipeline = new DefaultSamplingPipeline
-            {
-                Temperature = safeTemperature,
-                TopP = topP,
-                TopK = 40,
-                RepeatPenalty = 1.15f
+                _session.History.Messages.RemoveAt(_session.History.Messages.Count - 1);
             }
-        };
 
-        var chatMessage = new ChatHistory.Message(AuthorRole.User, userPrompt);
+            var safeTemperature = Math.Max(0.1f, temperature);
 
-        await foreach (var token in _session.ChatAsync(chatMessage, inferenceParams, cancellationToken))
+            var inferenceParams = new InferenceParams
+            {
+                MaxTokens = 1024,
+                AntiPrompts = new List<string> { "<|im_end|>", "<|im_start|>" },
+                SamplingPipeline = new DefaultSamplingPipeline
+                {
+                    Temperature = safeTemperature,
+                    TopP = topP,
+                    TopK = 40,
+                    RepeatPenalty = 1.15f
+                }
+            };
+
+            var chatMessage = new ChatHistory.Message(AuthorRole.User, userPrompt);
+
+            await foreach (var token in _session.ChatAsync(chatMessage, inferenceParams, cancellationToken))
+            {
+                yield return token;
+            }
+        }
+        finally
         {
-            yield return token;
+            _inferenceLock.Release();
         }
     }
 
     public void Dispose()
     {
+        if (_disposed) return;
+        
+        _initLock.Dispose();
+        _inferenceLock.Dispose();
+        
         _session = null;
         _executor = null;
+        
         _context?.Dispose();
         _weights?.Dispose();
-        _initLock.Dispose();
+        
+        _disposed = true;
     }
 }

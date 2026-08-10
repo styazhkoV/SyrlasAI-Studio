@@ -10,7 +10,7 @@
         "projectUniqueName": "X:\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj",
         "projectName": "SyrlasAIEngine",
         "projectPath": "X:\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\SyrlasAIEngine.csproj",
-        "packagesPath": "C:\\Users\\alexs\\.nuget\\packages",
+        "packagesPath": "C:\\Users\\alexs\\.nuget\\packages\\",
         "outputPath": "X:\\SyrlasStudio\\SyrlasStudio\\SyrlasAIEngine\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -45,13 +45,51 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "Dapper": {
+              "target": "Package",
+              "version": "[2.1.79, )"
+            },
+            "DocumentFormat.OpenXml": {
+              "target": "Package",
+              "version": "[3.5.1, )"
+            },
             "LLamaSharp": {
               "target": "Package",
               "version": "[0.27.0, )"
             },
-            "LLamaSharp.Backend.Cuda12": {
+            "LLamaSharp.Backend.Cpu": {
               "target": "Package",
               "version": "[0.27.0, )"
+            },
+            "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[9.0.18, )"
+            },
+            "Microsoft.Data.Sqlite": {
+              "target": "Package",
+              "version": "[10.0.10, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "PdfPig": {
+              "target": "Package",
+              "version": "[0.1.15, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.5.0, )"
             }
           },
           "imports": [
@@ -66,6 +104,9 @@
           "assetTargetFallback": true,
           "warn": true,
           "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
@@ -80,7 +121,7 @@
         "projectUniqueName": "X:\\SyrlasStudio\\SyrlasStudio\\SyrlasStudio\\SyrlasStudio.csproj",
         "projectName": "SyrlasStudio",
         "projectPath": "X:\\SyrlasStudio\\SyrlasStudio\\SyrlasStudio\\SyrlasStudio.csproj",
-        "packagesPath": "C:\\Users\\alexs\\.nuget\\packages",
+        "packagesPath": "C:\\Users\\alexs\\.nuget\\packages\\",
         "outputPath": "X:\\SyrlasStudio\\SyrlasStudio\\SyrlasStudio\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [

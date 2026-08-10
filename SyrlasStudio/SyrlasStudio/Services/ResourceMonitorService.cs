@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace SyrlasStudio.Services;
 
-public class ResourceMonitorService
+public sealed class ResourceMonitorService : IDisposable
 {
-    // Событие передает: CPU %, RAM MB, Disk %, VRAM MB
     public event Action<double, double, double, double>? MetricsUpdated;
 
     private readonly CancellationTokenSource _cts = new();
     private readonly Process _process;
     private DateTime _lastTime;
     private TimeSpan _lastTotalProcessorTime;
+    private bool _disposed;
 
     public ResourceMonitorService()
     {
@@ -33,10 +33,7 @@ public class ResourceMonitorService
             {
                 _process.Refresh();
 
-                // 1. RAM (MB)
                 double ramMb = _process.WorkingSet64 / (1024.0 * 1024.0);
-
-                // 2. CPU (%)
                 var currentTime = DateTime.UtcNow;
                 var currentTotalProcessorTime = _process.TotalProcessorTime;
                 double cpuUsage = 0;
@@ -51,7 +48,6 @@ public class ResourceMonitorService
                 _lastTime = currentTime;
                 _lastTotalProcessorTime = currentTotalProcessorTime;
 
-                // 3. Disk (%)
                 double diskUsage = 0;
                 try
                 {
@@ -62,14 +58,20 @@ public class ResourceMonitorService
                 }
                 catch { }
 
-                // 4. VRAM (MB) через nvidia-smi
                 double vramMb = GetNvidiaVramUsage();
 
                 MetricsUpdated?.Invoke(cpuUsage, ramMb, diskUsage, vramMb);
             }
             catch { }
 
-            await Task.Delay(3000, token);
+            try
+            {
+                await Task.Delay(3000, token);
+            }
+            catch (TaskCanceledException)
+            {
+                break;
+            }
         }
     }
 
@@ -89,15 +91,32 @@ public class ResourceMonitorService
             using var process = Process.Start(startInfo);
             if (process != null)
             {
-                string output = process.StandardOutput.ReadToEnd();
-                process.WaitForExit(500);
-                if (double.TryParse(output.Trim(), out double usedMb))
+                // Если процесс завис и не завершился за 500мс — жестко убиваем
+                if (process.WaitForExit(500))
                 {
-                    return usedMb;
+                    string output = process.StandardOutput.ReadToEnd();
+                    if (double.TryParse(output.Trim(), out double usedMb))
+                    {
+                        return usedMb;
+                    }
+                }
+                else
+                {
+                    process.Kill();
                 }
             }
         }
         catch { }
         return 0;
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        
+        _cts.Cancel();
+        _cts.Dispose();
+        _process.Dispose();
+        _disposed = true;
     }
 }

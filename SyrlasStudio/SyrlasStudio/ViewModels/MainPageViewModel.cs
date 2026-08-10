@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ public class MainPageViewModel : INotifyPropertyChanged
 {
     private readonly AgentService _agentService;
     private readonly ResourceMonitorService? _resourceMonitor;
+    private readonly WebSearchService _webSearchService;
     private CancellationTokenSource? _cts;
 
     public event Action? ScrollToRequested;
@@ -45,6 +47,14 @@ public class MainPageViewModel : INotifyPropertyChanged
     }
 
     public bool IsNotGenerating => !IsGenerating;
+
+    // Флаг поиска в сети
+    private bool _isWebSearchEnabled = true;
+    public bool IsWebSearchEnabled
+    {
+        get => _isWebSearchEnabled;
+        set => SetProperty(ref _isWebSearchEnabled, value);
+    }
 
     private string _currentSpeedText = "0.0 tok/s";
     public string CurrentSpeedText
@@ -127,17 +137,18 @@ public class MainPageViewModel : INotifyPropertyChanged
     public ICommand SendMessageCommand { get; }
     public ICommand StopCommand { get; }
     public ICommand NewChatCommand { get; }
-    public ICommand CopyCodeCommand { get; }
+    public ICommand ExportLogsCommand { get; }
 
     public MainPageViewModel(AgentService agentService, ResourceMonitorService? resourceMonitor = null)
     {
         _agentService = agentService;
         _resourceMonitor = resourceMonitor;
+        _webSearchService = new WebSearchService();
 
         SendMessageCommand = new Command(async () => await SendMessageAsync());
         StopCommand = new Command(OnStop);
         NewChatCommand = new Command(OnNewChat);
-        CopyCodeCommand = new Command<string>(async (code) => await CopyCodeAsync(code));
+        ExportLogsCommand = new Command(async () => await ExportLogsAsync());
 
         if (_resourceMonitor != null)
         {
@@ -158,7 +169,6 @@ public class MainPageViewModel : INotifyPropertyChanged
             CpuUsageText = $"{cpuPercent:F1}%";
             CpuProgress = Math.Clamp(cpuPercent / 100.0, 0, 1);
             RamUsageText = $"{ramMb:F0} MB";
-            // Нормализуем относительно ~16 GB; UI только индикатор
             RamProgress = Math.Clamp(ramMb / 16384.0, 0, 1);
             DiskUsageText = $"{diskPercent:F0}%";
             DiskProgress = Math.Clamp(diskPercent / 100.0, 0, 1);
@@ -167,7 +177,7 @@ public class MainPageViewModel : INotifyPropertyChanged
 
     private async Task InitializeEngineAsync()
     {
-        AddLog("Система Syrlas Studio инициализирована.");
+        AddLog("Инициализация Syrlas Studio Engine...");
         try
         {
             await _agentService.InitializeAsync(AddLog);
@@ -202,22 +212,38 @@ public class MainPageViewModel : INotifyPropertyChanged
             IsUser = false
         };
         Messages.Add(botMessage);
-
         RequestScroll();
+
+        var promptToEngine = userText;
+
+        // Поиск в Интернете
+        if (IsWebSearchEnabled)
+        {
+            AddLog($"Поиск информации в сети для: \"{userText}\"...");
+            var searchResults = await _webSearchService.SearchAsync(userText);
+            if (!string.IsNullOrWhiteSpace(searchResults))
+            {
+                AddLog("Данные из сети получены и переданы модели.");
+                promptToEngine = $"[Информация из Интернета]:\n{searchResults}\n\n[Вопрос пользователя]: {userText}";
+            }
+            else
+            {
+                AddLog("Результаты в сети не найдены, используем базовые знания.");
+            }
+        }
 
         var stopwatch = Stopwatch.StartNew();
         int tokenCount = 0;
 
         try
         {
-            await foreach (var token in _agentService.GenerateResponseAsync(userText, Temperature, TopP, _cts.Token))
+            await foreach (var token in _agentService.GenerateResponseAsync(promptToEngine, Temperature, TopP, _cts.Token))
             {
                 tokenCount++;
                 botMessage.Text += token;
 
-                // Замер скорости в реальном времени
                 double elapsedSeconds = stopwatch.Elapsed.TotalSeconds;
-                if (elapsedSeconds > 0.1)
+                if (elapsedSeconds > 0.05)
                 {
                     double currentSpeed = tokenCount / elapsedSeconds;
                     CurrentSpeedText = $"{currentSpeed:F1} tok/s";
@@ -229,7 +255,7 @@ public class MainPageViewModel : INotifyPropertyChanged
         }
         catch (OperationCanceledException)
         {
-            botMessage.Text += " [Генерация остановлена пользователем]";
+            botMessage.Text += " [Остановлено пользователем]";
         }
         catch (Exception ex)
         {
@@ -240,7 +266,6 @@ public class MainPageViewModel : INotifyPropertyChanged
             stopwatch.Stop();
             IsGenerating = false;
 
-            // Финальный точный расчет скорости
             if (stopwatch.Elapsed.TotalSeconds > 0 && tokenCount > 0)
             {
                 double finalSpeed = tokenCount / stopwatch.Elapsed.TotalSeconds;
@@ -254,12 +279,29 @@ public class MainPageViewModel : INotifyPropertyChanged
         }
     }
 
+    private async Task ExportLogsAsync()
+    {
+        try
+        {
+            var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            var filePath = Path.Combine(desktopPath, $"syrlas_log_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
+            var content = string.Join(Environment.NewLine, SystemLogs);
+
+            await File.WriteAllTextAsync(filePath, content);
+            AddLog($"Лог выгружен на Рабочий стол: {Path.GetFileName(filePath)}");
+        }
+        catch (Exception ex)
+        {
+            AddLog($"Ошибка выгрузки лога: {ex.Message}");
+        }
+    }
+
     private void OnStop()
     {
         if (IsGenerating && _cts != null && !_cts.IsCancellationRequested)
         {
             _cts.Cancel();
-            AddLog("Запрос на остановку генерации выслан.");
+            AddLog("Остановка генерации.");
         }
     }
 
@@ -269,14 +311,6 @@ public class MainPageViewModel : INotifyPropertyChanged
         Messages.Clear();
         CurrentSpeedText = "0.0 tok/s";
         AddLog("Сессия очищена.");
-    }
-
-    private async Task CopyCodeAsync(string? text)
-    {
-        if (!string.IsNullOrEmpty(text))
-        {
-            await Clipboard.Default.SetTextAsync(text);
-        }
     }
 
     private void AddLog(string message)

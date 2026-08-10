@@ -1,89 +1,133 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using LLama;
 using LLama.Common;
+using LLama.Native;
+using LLama.Sampling;
 
-namespace SyrlasAIEngine.Services;
-
-public class LlamaInferenceService : IDisposable
+namespace SyrlasAIEngine.Services
 {
-    private static readonly string[] ModelCandidates =
-    [
-        @"X:\SyrlasStudio\SyrlasStudio\SyrlasAIEngine\Model\qwen2.5-coder-1.5b-instruct-q4_k_m.gguf",
-        @"X:\SyrlasStudio\SyrlasStudio\SyrlasAIEngine\Model\qwen2.5-coder-0.5b-instruct-q4_k_m.gguf",
-        @"X:\SyrlasStudio\SyrlasAIEngine\Model\Qwen2.5-1.5B-Instruct-Q4_K_L.gguf"
-    ];
-
-    private LLamaWeights? _weights;
-    private StatelessExecutor? _executor;
-    private bool _isInitialized;
-    private readonly SemaphoreSlim _initLock = new(1, 1);
-
-    private async Task InitializeAsync()
+    public class LlamaInferenceService : IDisposable
     {
-        if (_isInitialized) return;
+        private LLamaWeights? _weights;
+        private LLamaContext? _context;
+        private InteractiveExecutor? _executor;
+        private readonly SemaphoreSlim _lock = new(1, 1);
+        private bool _isLoaded = false;
 
-        await _initLock.WaitAsync();
-        try
+        public bool IsLoaded => _isLoaded;
+
+        public async Task LoadModelAsync(
+            string modelPath, 
+            int contextSize = 2048, 
+            int gpuLayerCount = 99)          // ← теперь по умолчанию все слои
         {
-            if (_isInitialized) return;
-
-            var modelPath = Array.Find(ModelCandidates, File.Exists)
-                ?? throw new FileNotFoundException("Файл модели не найден в SyrlasAIEngine\\Model.");
-
-            await Task.Run(() =>
+            await _lock.WaitAsync();
+            try
             {
+                UnloadModelInternal();
+
                 var parameters = new ModelParams(modelPath)
                 {
-                    ContextSize = 2048,
-                    GpuLayerCount = 99,
+                    // GPU
+                    GpuLayerCount = gpuLayerCount,
+
+                    // Контекст
+                    ContextSize = (uint)contextSize,
+
+                    // CPU (Xeon X5660 — 6 физических ядер)
                     Threads = 6,
-                    UseMemoryLock = false,
-                    UseMemorymap = true
+
+                    // Память
+                    UseMemoryLock = true,
+                    UseMemorymap = true,
+
+                    // KV Cache + Flash Attention (важно для скорости)
+                    TypeK = GGMLType.GGML_TYPE_Q8_0,
+                    TypeV = GGMLType.GGML_TYPE_Q8_0,
+                    FlashAttention = false,          // на GTX 1070 часто быстрее false
+                    NoKqvOffload = false,
+
+                    // Батч
+                    BatchSize = 512
                 };
 
-                _weights = LLamaWeights.LoadFromFile(parameters);
-                _executor = new StatelessExecutor(_weights, parameters);
-            });
-
-            _isInitialized = true;
-        }
-        finally
-        {
-            _initLock.Release();
-        }
-    }
-
-    public async IAsyncEnumerable<string> GenerateResponseAsync(
-        string prompt, 
-        [EnumeratorCancellation] CancellationToken cancellationToken = default)
-    {
-        await InitializeAsync();
-
-        if (_executor == null)
-        {
-            yield break;
+                _weights = await Task.Run(() => LLamaWeights.LoadFromFile(parameters));
+                _context = _weights.CreateContext(parameters);
+                _executor = new InteractiveExecutor(_context);
+                _isLoaded = true;
+            }
+            finally
+            {
+                _lock.Release();
+            }
         }
 
-        var inferenceParams = new InferenceParams()
+        public async IAsyncEnumerable<string> GenerateStreamAsync(
+            string prompt, 
+            InferenceParams? inferenceParams = null,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            MaxTokens = 2048,
-            AntiPrompts = new List<string> { "User:", "Вы:" }
-        };
+            if (!_isLoaded || _executor == null)
+                throw new InvalidOperationException("Модель GGUF не загружена в память.");
 
-        await foreach (var token in _executor.InferAsync(prompt, inferenceParams, cancellationToken))
-        {
-            yield return token;
+            await _lock.WaitAsync(cancellationToken);
+            try
+            {
+                inferenceParams ??= new InferenceParams
+                {
+                    MaxTokens = 2048,
+                    AntiPrompts = new List<string> { "<|im_end|>", "<|im_start|>" },
+                    SamplingPipeline = new DefaultSamplingPipeline
+                    {
+                        Temperature = 0.7f,
+                        TopP = 0.9f,
+                        TopK = 40,
+                        RepeatPenalty = 1.15f
+                    }
+                };
+
+                await foreach (var token in _executor.InferAsync(prompt, inferenceParams, cancellationToken))
+                {
+                    yield return token;
+                }
+            }
+            finally
+            {
+                _lock.Release();
+            }
         }
-    }
 
-    public void Dispose()
-    {
-        _weights?.Dispose();
-        _initLock.Dispose();
+        public void UnloadModel()
+        {
+            _lock.Wait();
+            try
+            {
+                UnloadModelInternal();
+            }
+            finally
+            {
+                _lock.Release();
+            }
+        }
+
+        private void UnloadModelInternal()
+        {
+            _context?.Dispose();
+            _weights?.Dispose();
+            _context = null;
+            _weights = null;
+            _executor = null;
+            _isLoaded = false;
+        }
+
+        public void Dispose()
+        {
+            UnloadModelInternal();
+            _lock.Dispose();
+        }
     }
 }
