@@ -1,68 +1,98 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <OutputType>Exe</OutputType>
-        <RootNamespace>SyrlasStudio</RootNamespace>
-        <UseMaui>true</UseMaui>
-        <SingleProject>true</SingleProject>
-        <NoWarn>$(NoWarn);MVVMTK0045</NoWarn>
+  <PropertyGroup>
+    <TargetFrameworks>net10.0-maccatalyst</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>SyrlasStudio</RootNamespace>
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
 
-        <!-- Display name -->
-        <ApplicationTitle>SyrlasStudio</ApplicationTitle>
+    <!-- Идентификация приложения -->
+    <ApplicationTitle>SyrlasStudio</ApplicationTitle>
+    <ApplicationId>com.syrlas.syrlasstudio</ApplicationId>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
 
-        <!-- App Identifier -->
-        <ApplicationId>com.companyname.syrlasstudio</ApplicationId>
+    <!-- Минимальная версия macOS/MacCatalyst -->
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
 
-        <!-- Versions -->
-        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-        <ApplicationVersion>1</ApplicationVersion>
+    <!-- Игнорирование проверок версий Xcode и уязвимостей NuGet -->
+    <_SkipXcodeVersionCheck>true</_SkipXcodeVersionCheck>
+    <MtouchExtraArgs>--skip-xcode-check</MtouchExtraArgs>
+    <NoWarn>$(NoWarn);NU1903</NoWarn>
+  </PropertyGroup>
 
-        <!-- Unpackaged Windows App -->
-        <WindowsPackageType>None</WindowsPackageType>
+  <!-- Конфигурация Debug: отключение линкера ILLink для предотвращения ошибки MT0180 -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <PublishTrimmed>false</PublishTrimmed>
+    <MtouchLink>None</MtouchLink>
+  </PropertyGroup>
 
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
-        <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
-        <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
-    </PropertyGroup>
+  <!-- Конфигурация Release -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <PublishTrimmed>true</PublishTrimmed>
+    <EnableCodeSigning Condition="'$(EnableCodeSigning)' == ''">true</EnableCodeSigning>
+    <CodesignKey Condition="'$(CodesignKey)' == ''">-</CodesignKey>
+    <CodesignEntitlements>Platforms\MacCatalyst\Entitlements.plist</CodesignEntitlements>
+    <RuntimeIdentifiers>maccatalyst-arm64;maccatalyst-x64</RuntimeIdentifiers>
+  </PropertyGroup>
 
+  <!-- 1. Удаление не-macOS файлов до этапа копирования и сбора ресурсов -->
+  <Target Name="PurgeNonMacRuntimesBeforeBundle" 
+          BeforeTargets="AssignTargetPaths;_ComputeNativeLibraries;_CollectBundleResources;_CopyFilesToBundle;_CreateAppBundle;_GetNativeFilesToBundle;Build" 
+          AfterTargets="ResolvePackageAssets;ResolveAssemblyReferences">
     <ItemGroup>
-        <!-- App Icon -->
-        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+      <RuntimeCopyLocalItems Remove="@(RuntimeCopyLocalItems)" 
+        Condition="$([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes/linux')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes\linux')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes/win')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes\win')) or '%(Extension)' == '.so' or '%(Extension)' == '.dll'" />
 
-        <!-- Splash Screen -->
-        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" 
+        Condition="$([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes/linux')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes\linux')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes/win')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes\win')) or '%(Extension)' == '.so' or '%(Extension)' == '.dll'" />
 
-        <!-- Images -->
-        <MauiImage Include="Resources\Images\*" />
-        <MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
-        
-        <!-- Custom Fonts -->
-        <MauiFont Include="Resources\Fonts\*" />
+      <_SourceItemsToCopyToOutputDirectory Remove="@(_SourceItemsToCopyToOutputDirectory)" 
+        Condition="$([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes/linux')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes\linux')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes/win')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes\win')) or '%(Extension)' == '.so'" />
 
-        <!-- Raw Assets -->
-        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+      <Content Remove="@(Content)" 
+               Condition="$([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes/linux')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes\linux')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes/win')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes\win')) or '%(Extension)' == '.so'" />
+
+      <None Remove="@(None)" 
+            Condition="$([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes/linux')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes\linux')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes/win')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes\win')) or '%(Extension)' == '.so'" />
     </ItemGroup>
+  </Target>
 
+  <!-- 2. Очистка внутренних списков нативных библиотек MacCatalyst SDK после их расчёта -->
+  <Target Name="PurgeNativeLibrariesAfterCompute" AfterTargets="_ComputeNativeLibraries">
     <ItemGroup>
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-        <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.9" />
-        
-        <!-- Актуальная версия 0.27.0 для совместимости с SyrlasAIEngine -->
-        <PackageReference Include="LLamaSharp" Version="0.27.0" />
-        
-        <!-- CUDA-бэкенд для GTX 1070 (версия строго 0.27.0) -->
-        <PackageReference Include="LLamaSharp.Backend.Cuda12" Version="0.27.0" />
-    </ItemGroup>
+      <_NativeLibrary Remove="@(_NativeLibrary)" 
+        Condition="$([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes/linux')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes\linux')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes/win')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes\win')) or '%(Extension)' == '.so'" />
 
-    <ItemGroup>
-        <ProjectReference Include="..\SyrlasAIEngine\SyrlasAIEngine.csproj" />
+      <_BundleResourceWithLogicalName Remove="@(_BundleResourceWithLogicalName)" 
+        Condition="$([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes/linux')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes\linux')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes/win')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes\win')) or '%(Extension)' == '.so'" />
+
+      <NativeReference Remove="@(NativeReference)" 
+        Condition="$([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes/linux')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes\linux')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes/win')) or $([System.String]::Copy('%(Identity)').ToLower().Contains('runtimes\win')) or '%(Extension)' == '.so'" />
     </ItemGroup>
+  </Target>
+
+  <!-- Ресурсы MAUI -->
+  <ItemGroup>
+    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+    <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+    <MauiImage Include="Resources\Images\*" />
+    <MauiFont Include="Resources\Fonts\*" />
+    <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <!-- Зависимости NuGet -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" Condition="'$(Configuration)' == 'Debug'" />
+  </ItemGroup>
+
+  <!-- Зависимости проектов решений -->
+  <ItemGroup>
+    <ProjectReference Include="..\SyrlasAIEngine\SyrlasAIEngine.csproj" />
+  </ItemGroup>
 
 </Project>
