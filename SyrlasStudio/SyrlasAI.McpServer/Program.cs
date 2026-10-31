@@ -12,10 +12,10 @@ using ModelContextProtocol.Server;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-// Регистрация MCP-сервера с транспортом через stdio и инструментами
+// Регистрация MCP-сервера, stdio транспорта и автоматическое обнаружение инструментов из сборки
 builder.Services.AddMcpServer()
-    .WithStandardIOTransport()
-    .WithToolTypes([typeof(SyrlasStudioMcpTools)]);
+    .WithStdioServerTransport()
+    .WithToolsFromAssembly();
 
 var host = builder.Build();
 await host.RunAsync();
@@ -30,7 +30,7 @@ public static class SyrlasStudioMcpTools
     {
         return "Проект: SyrlasAI-Studio.\n" +
                "Компоненты: SyrlasStudio (MAUI Client), SyrlasAIEngine (ASP.NET Core Backend + RAG), SyrlasAI.McpServer (Developer AI Tools).\n" +
-               "Стек: .NET 10, Entity Framework Core, SQLite, Model Context Protocol.";
+               "Стек: .NET 10, C# 12, Entity Framework Core, SQLite, Model Context Protocol.";
     }
 
     [McpServerTool, Description("Возвращает структуру таблиц и полей SQLite базы данных бэкенда.")]
