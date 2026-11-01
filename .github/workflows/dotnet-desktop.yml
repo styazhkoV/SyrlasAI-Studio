@@ -1,0 +1,5 @@
+env:
+      Solution_Name: SyrlasStudio/SyrlasStudio.sln               # Путь к вашему решению
+      Test_Project_Path: SyrlasStudio.Tests\SyrlasStudio.Tests.csproj # Путь к тестам (если есть)
+      Wap_Project_Directory: SyrlasStudio.Package               # Папка WAP-проекта (если применимо)
+      Wap_Project_Path: SyrlasStudio.Package\SyrlasStudio.Package.wapproj
