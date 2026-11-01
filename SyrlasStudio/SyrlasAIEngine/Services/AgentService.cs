@@ -42,7 +42,8 @@ namespace SyrlasAIEngine.Services
 
             string fullPrompt = _promptFactory.BuildChatPrompt(profile.SystemPrompt, finalUserQuery);
 
-            await foreach (var token in _llamaService.GenerateStreamAsync(fullPrompt, profile.DefaultParams, cancellationToken))
+            // Исправлено: вызываем метод с аргументами, соответствующими стандартной сигнатуре инференса
+            await foreach (var token in _llamaService.GenerateStreamAsync(fullPrompt, cancellationToken))
             {
                 yield return token;
             }
