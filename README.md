@@ -197,7 +197,7 @@ CREATE INDEX IF NOT EXISTS idx_chunks_artifact ON document_chunks(artifact_id);
 CREATE INDEX IF NOT EXISTS idx_agent_contexts_session ON agent_contexts(session_id, stage, is_active);
 ```
 
-7\. Пример реализации Оркестратора агентов на C# (.NET 10 / LLamaSharp)
+7\. Пример реализации Оркестратора агентов на C# (.NET 9 / LLamaSharp)
 
 ```
 C#
@@ -264,14 +264,14 @@ public class AgentOrchestrator
             ),
 
             AgentRole.Architect => (
-                "Ты — Principal .NET Architect. Спроектируй C# интерфейсы, CQRS команды и структуру классов в .NET 10.\n" +
+                "Ты — Principal .NET Architect. Спроектируй C# интерфейсы, CQRS команды и структуру классов в .NET 9.\n" +
                 $"Техническое задание:\n{previousContext}",
                 new InferenceParams { Temperature = 0.1f, TopP = 0.9f, AntiPrompts = new[] { "User:" } }
             ),
 
             AgentRole.Coder => (
-                "Ты — Senior C# Developer (.NET 10). Пиши чистый, компилируемый код без лишних пояснений. " +
-                "Используй C# 14, pattern matching и первичные конструкторы.\n" +
+                "Ты — Senior C# Developer (.NET 9). Пиши чистый, компилируемый код без лишних пояснений. " +
+                "Используй C# 13, pattern matching и первичные конструкторы.\n" +
                 $"Архитектурный план и контракты:\n{previousContext}",
                 new InferenceParams { Temperature = 0.0f, TopP = 0.95f, AntiPrompts = new[] { "User:" } }
             ),

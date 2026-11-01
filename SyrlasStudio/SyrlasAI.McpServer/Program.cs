@@ -30,7 +30,7 @@ public static class SyrlasStudioMcpTools
     {
         return "Проект: SyrlasAI-Studio.\n" +
                "Компоненты: SyrlasStudio (MAUI Client), SyrlasAIEngine (ASP.NET Core Backend + RAG), SyrlasAI.McpServer (Developer AI Tools).\n" +
-               "Стек: .NET 10, C# 12, Entity Framework Core, SQLite, Model Context Protocol.";
+               "Стек: .NET 9, C# 13, Entity Framework Core, SQLite, Model Context Protocol.";
     }
 
     [McpServerTool, Description("Возвращает структуру таблиц и полей SQLite базы данных бэкенда.")]

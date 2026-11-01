@@ -49,7 +49,7 @@ namespace SyrlasAIEngine.Services
                 }),
 
             AgentRole.Developer => new AgentProfile(
-                SystemPrompt: @"Ты — Senior Fullstack & Engine Developer (эксперт в C, C++, C#/.NET 10).
+                SystemPrompt: @"Ты — Senior Fullstack & Engine Developer (эксперт в C, C++, C#/.NET 9).
 Твоя задача: писать высокопроизводительный, безопасный к памяти, чисто отформатированный и готовый к production код.",
                 DefaultParams: new InferenceParams
                 {
