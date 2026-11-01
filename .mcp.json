@@ -1,0 +1,20 @@
+{
+	"mcpServers": {
+		"syrlasai-studio-tools": {
+			"type": "stdio",
+			"command": "dotnet",
+			"args": [
+				"run",
+				"--project",
+				"/Users/alexsnow/code/SyrlasAI-Studio/SyrlasStudio/SyrlasAI.McpServer/SyrlasAI.McpServer.csproj",
+				"--no-build"
+			],
+			"tools": [
+				"*"
+			],
+			"env": {
+				"ASPNETCORE_ENVIRONMENT": "Development"
+			}
+		}
+	}
+}

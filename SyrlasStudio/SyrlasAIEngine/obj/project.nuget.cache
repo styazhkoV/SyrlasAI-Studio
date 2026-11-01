@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "WArAhOYqFho=",
+  "dgSpecHash": "dk6ziRVUw3U=",
   "success": true,
-  "projectFilePath": "/Users/alexsnow/SyrlasAI-Studio/SyrlasStudio/SyrlasAIEngine/SyrlasAIEngine.csproj",
+  "projectFilePath": "/Users/alexsnow/code/SyrlasAI-Studio/SyrlasStudio/SyrlasAIEngine/SyrlasAIEngine.csproj",
   "expectedPackageFiles": [
     "/Users/alexsnow/.nuget/packages/communitytoolkit.highperformance/8.4.2/communitytoolkit.highperformance.8.4.2.nupkg.sha512",
     "/Users/alexsnow/.nuget/packages/dapper/2.1.66/dapper.2.1.66.nupkg.sha512",
@@ -34,7 +34,7 @@
     "/Users/alexsnow/.nuget/packages/pdfpig/0.1.10/pdfpig.0.1.10.nupkg.sha512",
     "/Users/alexsnow/.nuget/packages/sqlitepclraw.bundle_e_sqlite3/2.1.11/sqlitepclraw.bundle_e_sqlite3.2.1.11.nupkg.sha512",
     "/Users/alexsnow/.nuget/packages/sqlitepclraw.core/2.1.11/sqlitepclraw.core.2.1.11.nupkg.sha512",
-    "/Users/alexsnow/.nuget/packages/sqlitepclraw.lib.e_sqlite3/2.1.11/sqlitepclraw.lib.e_sqlite3.2.1.11.nupkg.sha512",
+    "/Users/alexsnow/.nuget/packages/sqlitepclraw.lib.e_sqlite3/3.53.4.1-pre1/sqlitepclraw.lib.e_sqlite3.3.53.4.1-pre1.nupkg.sha512",
     "/Users/alexsnow/.nuget/packages/sqlitepclraw.provider.e_sqlite3/2.1.11/sqlitepclraw.provider.e_sqlite3.2.1.11.nupkg.sha512",
     "/Users/alexsnow/.nuget/packages/system.interactive.async/7.0.0/system.interactive.async.7.0.0.nupkg.sha512",
     "/Users/alexsnow/.nuget/packages/system.io.packaging/8.0.1/system.io.packaging.8.0.1.nupkg.sha512",

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/alexsnow/SyrlasAI-Studio/SyrlasStudio/SyrlasAIEngine/SyrlasAIEngine.csproj": {}
+    "/Users/alexsnow/code/SyrlasAI-Studio/SyrlasStudio/SyrlasAIEngine/SyrlasAIEngine.csproj": {}
   },
   "projects": {
-    "/Users/alexsnow/SyrlasAI-Studio/SyrlasStudio/SyrlasAIEngine/SyrlasAIEngine.csproj": {
+    "/Users/alexsnow/code/SyrlasAI-Studio/SyrlasStudio/SyrlasAIEngine/SyrlasAIEngine.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/alexsnow/SyrlasAI-Studio/SyrlasStudio/SyrlasAIEngine/SyrlasAIEngine.csproj",
+        "projectUniqueName": "/Users/alexsnow/code/SyrlasAI-Studio/SyrlasStudio/SyrlasAIEngine/SyrlasAIEngine.csproj",
         "projectName": "SyrlasAIEngine",
-        "projectPath": "/Users/alexsnow/SyrlasAI-Studio/SyrlasStudio/SyrlasAIEngine/SyrlasAIEngine.csproj",
+        "projectPath": "/Users/alexsnow/code/SyrlasAI-Studio/SyrlasStudio/SyrlasAIEngine/SyrlasAIEngine.csproj",
         "packagesPath": "/Users/alexsnow/.nuget/packages/",
-        "outputPath": "/Users/alexsnow/SyrlasAI-Studio/SyrlasStudio/SyrlasAIEngine/obj/",
+        "outputPath": "/Users/alexsnow/code/SyrlasAI-Studio/SyrlasStudio/SyrlasAIEngine/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/alexsnow/.nuget/NuGet/NuGet.Config"
@@ -81,6 +81,10 @@
             "PdfPig": {
               "target": "Package",
               "version": "[0.1.10, )"
+            },
+            "SQLitePCLRaw.lib.e_sqlite3": {
+              "target": "Package",
+              "version": "[3.53.4.1-pre1, )"
             }
           },
           "imports": [
@@ -99,7 +103,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.400/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.401/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",

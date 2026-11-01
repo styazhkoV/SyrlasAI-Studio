@@ -104,13 +104,13 @@ public sealed class AgentOrchestrator : IDisposable
                 new InferenceParams { AntiPrompts = ["User:"], SamplingPipeline = new DefaultSamplingPipeline { Temperature = 0.2f, TopP = 0.85f } }
             ),
             AgentRole.Architect => (
-                "Ты — Principal .NET Architect. Спроектируй C# интерфейсы, CQRS команды и структуру классов в .NET 9.\n" +
+                "Ты — Principal .NET Architect. Спроектируй C# интерфейсы, CQRS команды и структуру классов в .NET 10.\n" +
                 $"Техническое задание:\n{previousContext}",
                 new InferenceParams { AntiPrompts = ["User:"], SamplingPipeline = new DefaultSamplingPipeline { Temperature = 0.1f, TopP = 0.9f } }
             ),
             AgentRole.Coder => (
-                "Ты — Senior C# Developer (.NET 9). Пиши чистый, компилируемый код без лишних пояснений. " +
-                "Используй C# 12/13, pattern matching и первичные конструкторы.\n" +
+                "Ты — Senior C# Developer (.NET 10). Пиши чистый, компилируемый код без лишних пояснений. " +
+                "Используй C# 14, pattern matching и первичные конструкторы.\n" +
                 $"Архитектурный план и контракты:\n{previousContext}",
                 new InferenceParams { AntiPrompts = ["User:"], SamplingPipeline = new DefaultSamplingPipeline { Temperature = 0.0f, TopP = 0.95f } }
             ),
