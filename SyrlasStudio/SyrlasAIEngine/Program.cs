@@ -1,76 +1,53 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using SyrlasAIEngine.Database;
 using SyrlasAIEngine.Services;
+using SyrlasAIEngine.Services.LLama;
+using SyrlasAIEngine.Services.Parsers;
 
-namespace SyrlasAIEngine;
+var builder = WebApplication.CreateBuilder(args);
 
-public class Program
+// 1. Чтение конфигурации из appsettings.json
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+                          ?? "Data Source=syrlas_local.db";
+string modelPath = builder.Configuration["LlamaSettings:ModelPath"] 
+                   ?? "Models/qwen2.5-1.5b-instruct-q4_k_m.gguf";
+
+// 2. Регистрация базы данных (DatabaseInitializer) как синглтона или сscoped
+builder.Services.AddSingleton(new DatabaseInitializer(connectionString));
+
+// 3. Регистрация генератора эмбеддингов LLamaSharp как синглтона (тяжелый объект с весами модели в памяти)
+builder.Services.AddSingleton<IEmbeddingGenerator>(provider => 
+    new LLamaEmbeddingGenerator(modelPath, contextSize: 2048));
+
+// 4. Регистрация парсеров документов (например, PDF, TXT, Markdown)
+builder.Services.AddSingleton<IDocumentParser, TextDocumentParser>();
+// builder.Services.AddSingleton<IDocumentParser, PdfDocumentParser>(); // при наличии
+
+// 5. Регистрация самого RagService
+builder.Services.AddScoped<RagService>();
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+// 6. Автоматическая инициализация базы данных и таблиц при старте приложения
+using (var scope = app.Services.CreateScope())
 {
-    public static async Task Main(string[] args)
-    {
-        try
-        {
-            Console.WriteLine("=== Syrlas AI Local Engine & Web API ===");
-            Console.WriteLine("Model : Qwen2.5-1.5B-Instruct-Q4_K_L");
-            Console.WriteLine("GPU   : NVIDIA GeForce GTX 1070 (8 GB)");
-            Console.WriteLine("CPU   : Intel Xeon X5660 (6C / 12T - Using 6 physical cores)");
-            Console.WriteLine();
-
-            // Инициализация ASP.NET Core Web API хоста
-            var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddControllers();
-            builder.Services.AddSingleton<WorkspaceService>();
-            builder.Services.AddSingleton<RagService>();
-            builder.Services.AddSingleton<LlamaInferenceService>();
-
-            var app = builder.Build();
-
-            // Инициализация базовых сервисов
-            var workspaceService = app.Services.GetRequiredService<WorkspaceService>();
-            await workspaceService.InitializeAsync();
-
-            // Прогрев LLM-сервиса
-            var inferenceService = app.Services.GetRequiredService<LlamaInferenceService>();
-
-            app.UseRouting();
-            app.MapControllers();
-
-            // Запуск Web API в фоне
-            _ = app.RunAsync("http://localhost:5000");
-            Console.WriteLine("[Engine] REST API запущен на http://localhost:5000");
-            Console.WriteLine("[Engine] Готов к работе.\n");
-
-            // Основной интерактивный консольный цикл
-            while (true)
-            {
-                Console.Write("User > ");
-                string? userInput = Console.ReadLine();
-
-                if (string.IsNullOrWhiteSpace(userInput) ||
-                    userInput.Equals("exit", StringComparison.OrdinalIgnoreCase))
-                {
-                    break;
-                }
-
-                Console.Write("Assistant > ");
-                string response = await inferenceService.GenerateResponseAsync(userInput);
-                Console.WriteLine(response);
-                Console.WriteLine();
-            }
-
-            Console.WriteLine("Завершение работы...");
-        }
-        catch (Exception ex)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"\n[FATAL ERROR] Программа аварийно завершила работу:");
-            Console.WriteLine(ex.ToString());
-            Console.ResetColor();
-
-            Console.WriteLine("\nНажмите любую клавишу для закрытия окна...");
-            Console.ReadKey();
-        }
-    }
+    var dbInitializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
+    await dbInitializer.InitializeAsync();
 }
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();

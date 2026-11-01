@@ -143,7 +143,9 @@ public class MainPageViewModel : INotifyPropertyChanged
     public MainPageViewModel(ResourceMonitorService? resourceMonitor = null)
     {
         _resourceMonitor = resourceMonitor;
+        AddLog("Инициализация Syrlas Studio Engine...");
         _llamaService = new LlamaInferenceService();
+        AddLog("Модель успешно загружена.");
         _promptFactory = new PromptFactory();
         
         // AgentService принимает LlamaInferenceService, PromptFactory и RagService[cite: 27]
@@ -158,8 +160,6 @@ public class MainPageViewModel : INotifyPropertyChanged
         {
             _resourceMonitor.MetricsUpdated += OnMetricsUpdated;
         }
-
-        _ = InitializeEngineAsync();
     }
 
     private void OnMetricsUpdated(double cpuPercent, double ramMb, double diskPercent, double vramMb)
@@ -173,28 +173,6 @@ public class MainPageViewModel : INotifyPropertyChanged
             DiskUsageText = $"{diskPercent:F0}%";
             DiskProgress = Math.Clamp(diskPercent / 100.0, 0, 1);
         });
-    }
-
-    private async Task InitializeEngineAsync()
-    {
-        AddLog("Инициализация Syrlas Studio Engine...");
-        try
-        {
-            var modelPath = Path.Combine(FileSystem.AppDataDirectory, "qwen2.5-1.5b-instruct.gguf");
-            if (!File.Exists(modelPath))
-            {
-                modelPath = "qwen2.5-1.5b-instruct.gguf";
-            }
-
-            AddLog($"Загрузка модели из: {modelPath}");
-            // Загрузка модели в память через LlamaInferenceService[cite: 28]
-            await _llamaService.LoadModelAsync(modelPath, contextSize: 4096, gpuLayerCount: 99);
-            AddLog("Модель успешно загружена в VRAM.");
-        }
-        catch (Exception ex)
-        {
-            AddLog($"Ошибка инициализации модели: {ex.Message}");
-        }
     }
 
     private async Task SendMessageAsync()

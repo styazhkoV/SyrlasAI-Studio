@@ -1,0 +1,61 @@
+name: Auto Release on Tag
+
+on:
+  push:
+    tags:
+      - 'v*' # Срабатывает при пуше любого тега, начинающегося с 'v' (например, v1.0.0)
+
+jobs:
+  release:
+    name: Build and Release
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            framework: net10.0-windows10.0.19041.0
+            asset_name: SyrlasStudio-Windows-x64.zip
+          - os: macos-latest
+            framework: net10.0-maccatalyst
+            asset_name: SyrlasStudio-macOS-Catalyst.zip
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Setup .NET 10
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Select Xcode 27.1
+      if: runner.os == 'macOS'
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '27.1'
+
+    - name: Install .NET MAUI Workload
+      run: dotnet workload install maui
+
+    - name: Publish App
+      run: dotnet publish SyrlasStudio/SyrlasStudio/SyrlasStudio.csproj -c Release -f ${{ matrix.framework }} -o ./publish-output
+
+    - name: Compress Release Files (Windows)
+      if: runner.os == 'Windows'
+      run: Compress-Archive -Path ./publish-output/* -DestinationPath ${{ matrix.asset_name }}
+
+    - name: Compress Release Files (macOS)
+      if: runner.os == 'macOS'
+      run: zip -r ${{ matrix.asset_name }} ./publish-output/*
+
+    - name: Create GitHub Release and Upload Assets
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          ${{ matrix.asset_name }}
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

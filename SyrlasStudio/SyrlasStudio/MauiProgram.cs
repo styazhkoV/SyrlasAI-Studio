@@ -1,36 +1,43 @@
-﻿using Microsoft.Extensions.Logging;
-using SyrlasStudio.ViewModels;
+using Microsoft.Extensions.Logging;
 using SyrlasStudio.Services;
-using SyrlasAIEngine.Services;
+using SyrlasStudio.ViewModels;
 
-namespace SyrlasStudio;
-
-public static class MauiProgram
+namespace SyrlasStudio
 {
-    public static MauiApp CreateMauiApp()
+    public static class MauiProgram
     {
-        var builder = MauiApp.CreateBuilder();
-        builder
-            .UseMauiApp<App>()
-            .ConfigureFonts(fonts =>
+        public static MauiApp CreateMauiApp()
+        {
+            var builder = MauiApp.CreateBuilder();
+            builder
+                .UseMauiApp<App>()
+                .ConfigureFonts(fonts =>
+                {
+                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                });
+
+            // Автоматическое определение базового адреса для эмулятора Android или десктопа
+            string baseAddress = DeviceInfo.Platform == DevicePlatform.Android
+                ? "http://10.0.2.2:5000"
+                : "http://localhost:5000";
+
+            // Регистрация HttpClient с таймаутом для LLM-инференса
+            builder.Services.AddHttpClient<ApiService>(client =>
             {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                client.BaseAddress = new Uri(baseAddress);
+                client.Timeout = TimeSpan.FromMinutes(5);
             });
 
+            // Регистрация архитектурных компонентов MVVM
+            builder.Services.AddTransient<MainPageViewModel>();
+            builder.Services.AddTransient<MainPage>();
+
 #if DEBUG
-        builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
-        // Регистрация сервисов AI-движка из библиотеки SyrlasAIEngine
-        builder.Services.AddSingleton<LlamaInferenceService>(); //[cite: 28]
-        builder.Services.AddSingleton<PromptFactory>();         //[cite: 29]
-        builder.Services.AddSingleton<RagService>();            //[cite: 30]
-        builder.Services.AddTransient<AgentService>();          //[cite: 27]
-        builder.Services.AddSingleton<ResourceMonitorService>();
-        builder.Services.AddTransient<MainPageViewModel>();
-        builder.Services.AddTransient<MainPage>();
-
-        return builder.Build();
+            return builder.Build();
+        }
     }
 }
