@@ -16,17 +16,14 @@
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
 
     <!-- Минимальная версия macOS/MacCatalyst -->
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">17.0</SupportedOSPlatformVersion>
 
-    <!-- Игнорирование проверок версий Xcode и уязвимостей NuGet -->
-    <_SkipXcodeVersionCheck>true</_SkipXcodeVersionCheck>
-    <MtouchExtraArgs>--skip-xcode-check</MtouchExtraArgs>
+    <!-- Игнорирование проверки уязвимостей NuGet -->
     <NoWarn>$(NoWarn);NU1903</NoWarn>
   </PropertyGroup>
 
-  <!-- Конфигурация Debug: отключение линкера ILLink для предотвращения ошибки MT0180 -->
+  <!-- Конфигурация Debug: отключение линкера для предотвращения ошибки MT0180 -->
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <PublishTrimmed>false</PublishTrimmed>
     <MtouchLink>None</MtouchLink>
   </PropertyGroup>
 
@@ -86,7 +83,7 @@
 
   <!-- Зависимости NuGet -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.110" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" Condition="'$(Configuration)' == 'Debug'" />
   </ItemGroup>
 
