@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.0" />
     <PackageReference Include="ModelContextProtocol" Version="0.1.0-*" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.4.1-pre1" />
   </ItemGroup>
 
 </Project>
