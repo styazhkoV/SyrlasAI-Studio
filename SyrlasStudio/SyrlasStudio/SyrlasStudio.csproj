@@ -72,6 +72,13 @@
     </ItemGroup>
   </Target>
 
+  <Target Name="PurgeUnsupportedNativeReferencesBeforeBundling" BeforeTargets="_ComputeDynamicLibrariesToReidentify">
+    <ItemGroup>
+      <_FileNativeReference Remove="@(_FileNativeReference)"
+                            Condition="'%(_FileNativeReference.Extension)' == '.so' or '%(_FileNativeReference.Extension)' == '.dll'" />
+    </ItemGroup>
+  </Target>
+
   <!-- Ресурсы MAUI -->
   <ItemGroup>
     <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
