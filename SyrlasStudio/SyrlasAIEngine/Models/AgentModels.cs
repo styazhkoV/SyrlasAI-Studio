@@ -20,20 +20,6 @@ namespace SyrlasAIEngine.Models
         public string BaseSystemPrompt { get; set; } = string.Empty;
     }
 
-    public class SwitchRoleRequest
-    {
-        public string SessionId { get; set; } = string.Empty;
-        public AgentRole Role { get; set; }
-    }
-
-    public class SaveArtifactRequest
-    {
-        public string SessionId { get; set; } = string.Empty;
-        public string Stage { get; set; } = "BUSINESS_REQUIREMENTS"; // BUSINESS_REQUIREMENTS, TECHNICAL_SPEC, ARCHITECTURE
-        public AgentRole SourceRole { get; set; }
-        public string SummaryContent { get; set; } = string.Empty;
-    }
-
     public class ChatRequest
     {
         public string SessionId { get; set; } = string.Empty;
@@ -46,5 +32,25 @@ namespace SyrlasAIEngine.Models
         public AgentRole Role { get; set; }
         public string Response { get; set; } = string.Empty;
     }
-    
+
+    public record AgentRequestDto(
+        AgentRole Role, 
+        string Prompt, 
+        bool UseRag = true
+    );
+
+    public class AgentRequest
+    {
+        public string Prompt { get; set; } = string.Empty;
+    }
+
+    public class AgentResponse
+    {
+        public string Response { get; set; } = string.Empty;
+
+        public AgentResponse(string response)
+        {
+            Response = response;
+        }
+    }
 }

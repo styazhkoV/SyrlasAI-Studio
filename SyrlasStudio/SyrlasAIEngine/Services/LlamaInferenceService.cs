@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using LLama;
@@ -8,126 +10,117 @@ using LLama.Common;
 using LLama.Native;
 using LLama.Sampling;
 
-namespace SyrlasAIEngine.Services
+namespace SyrlasAIEngine.Services;
+
+public sealed class LlamaInferenceService : IDisposable
 {
-    public class LlamaInferenceService : IDisposable
+    private readonly LLamaWeights _weights;
+    private readonly LLamaContext _context;
+    private readonly InteractiveExecutor _executor;
+    private readonly ChatSession _chatSession;
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
+
+    public LlamaInferenceService()
     {
-        private LLamaWeights? _weights;
-        private LLamaContext? _context;
-        private InteractiveExecutor? _executor;
-        private readonly SemaphoreSlim _lock = new(1, 1);
-        private bool _isLoaded = false;
+        string modelPath = Path.Combine(
+            AppDomain.CurrentDomain.BaseDirectory,
+            "Model",
+            "Qwen2.5-1.5B-Instruct-Q4_K_L.gguf");
 
-        public bool IsLoaded => _isLoaded;
-
-        public async Task LoadModelAsync(
-            string modelPath, 
-            int contextSize = 2048, 
-            int gpuLayerCount = 99)          // ← теперь по умолчанию все слои
+        if (!File.Exists(modelPath))
         {
-            await _lock.WaitAsync();
-            try
-            {
-                UnloadModelInternal();
-
-                var parameters = new ModelParams(modelPath)
-                {
-                    // GPU
-                    GpuLayerCount = gpuLayerCount,
-
-                    // Контекст
-                    ContextSize = (uint)contextSize,
-
-                    // CPU (Xeon X5660 — 6 физических ядер)
-                    Threads = 6,
-
-                    // Память
-                    UseMemoryLock = true,
-                    UseMemorymap = true,
-
-                    // KV Cache + Flash Attention (важно для скорости)
-                    TypeK = GGMLType.GGML_TYPE_Q8_0,
-                    TypeV = GGMLType.GGML_TYPE_Q8_0,
-                    FlashAttention = false,          // на GTX 1070 часто быстрее false
-                    NoKqvOffload = false,
-
-                    // Батч
-                    BatchSize = 512
-                };
-
-                _weights = await Task.Run(() => LLamaWeights.LoadFromFile(parameters));
-                _context = _weights.CreateContext(parameters);
-                _executor = new InteractiveExecutor(_context);
-                _isLoaded = true;
-            }
-            finally
-            {
-                _lock.Release();
-            }
+            throw new FileNotFoundException($"Модель не найдена по пути: {modelPath}");
         }
 
-        public async IAsyncEnumerable<string> GenerateStreamAsync(
-            string prompt, 
-            InferenceParams? inferenceParams = null,
-            [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        var modelParams = new ModelParams(modelPath)
         {
-            if (!_isLoaded || _executor == null)
-                throw new InvalidOperationException("Модель GGUF не загружена в память.");
+            GpuLayerCount = 99,
+            ContextSize = 4096,
+            Threads = 6, // 6 физических ядер Xeon X5660
+            UseMemoryLock = true,
+            UseMemorymap = true,
+            TypeK = GGMLType.GGML_TYPE_Q8_0,
+            TypeV = GGMLType.GGML_TYPE_Q8_0,
+            FlashAttention = true,
+            NoKqvOffload = false,
+            BatchSize = 512
+        };
 
-            await _lock.WaitAsync(cancellationToken);
-            try
+        Console.WriteLine("[Engine] Загрузка модели в VRAM...");
+        _weights = LLamaWeights.LoadFromFile(modelParams);
+        _context = _weights.CreateContext(modelParams);
+        _executor = new InteractiveExecutor(_context);
+
+        var chatHistory = new ChatHistory();
+        chatHistory.AddMessage(
+            AuthorRole.System,
+            "You are Syrlas AI Assistant—an expert, concise, and professional coding assistant.");
+
+        _chatSession = new ChatSession(_executor, chatHistory);
+    }
+
+    public async Task<string> GenerateResponseAsync(string userInput, CancellationToken cancellationToken = default)
+    {
+        await _semaphore.WaitAsync(cancellationToken);
+        try
+        {
+            var inferenceParams = GetInferenceParams();
+            var sb = new StringBuilder();
+
+            await foreach (var token in _chatSession.ChatAsync(
+                new ChatHistory.Message(AuthorRole.User, userInput),
+                inferenceParams))
             {
-                inferenceParams ??= new InferenceParams
-                {
-                    MaxTokens = 2048,
-                    AntiPrompts = new List<string> { "<|im_end|>", "<|im_start|>" },
-                    SamplingPipeline = new DefaultSamplingPipeline
-                    {
-                        Temperature = 0.7f,
-                        TopP = 0.9f,
-                        TopK = 40,
-                        RepeatPenalty = 1.15f
-                    }
-                };
-
-                await foreach (var token in _executor.InferAsync(prompt, inferenceParams, cancellationToken))
-                {
-                    yield return token;
-                }
+                sb.Append(token);
             }
-            finally
+
+            return sb.ToString();
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+
+    public async IAsyncEnumerable<string> GenerateStreamAsync(
+        string userInput, 
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        await _semaphore.WaitAsync(cancellationToken);
+        try
+        {
+            var inferenceParams = GetInferenceParams();
+
+            await foreach (var token in _chatSession.ChatAsync(
+                new ChatHistory.Message(AuthorRole.User, userInput),
+                inferenceParams))
             {
-                _lock.Release();
+                yield return token;
             }
         }
-
-        public void UnloadModel()
+        finally
         {
-            _lock.Wait();
-            try
-            {
-                UnloadModelInternal();
-            }
-            finally
-            {
-                _lock.Release();
-            }
+            _semaphore.Release();
         }
+    }
 
-        private void UnloadModelInternal()
+    private static InferenceParams GetInferenceParams() => new()
+    {
+        MaxTokens = 2048,
+        AntiPrompts = new List<string> { "<|im_end|>", "<|im_start|>" },
+        SamplingPipeline = new DefaultSamplingPipeline
         {
-            _context?.Dispose();
-            _weights?.Dispose();
-            _context = null;
-            _weights = null;
-            _executor = null;
-            _isLoaded = false;
+            Temperature = 0.7f,
+            TopP = 0.9f,
+            TopK = 40,
+            RepeatPenalty = 1.15f
         }
+    };
 
-        public void Dispose()
-        {
-            UnloadModelInternal();
-            _lock.Dispose();
-        }
+    public void Dispose()
+    {
+        _semaphore.Dispose();
+        _context.Dispose();
+        _weights.Dispose();
     }
 }
