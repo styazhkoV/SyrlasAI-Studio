@@ -1,5 +1,53 @@
-env:
-      Solution_Name: SyrlasStudio/SyrlasStudio.sln               # Путь к вашему решению
-      Test_Project_Path: SyrlasStudio.Tests\SyrlasStudio.Tests.csproj # Путь к тестам (если есть)
-      Wap_Project_Directory: SyrlasStudio.Package               # Папка WAP-проекта (если применимо)
-      Wap_Project_Path: SyrlasStudio.Package\SyrlasStudio.Package.wapproj
+name: SyrlasStudio MAUI CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+        include:
+          - os: windows-latest
+            framework: net10.0-windows10.0.19041.0
+          - os: macos-latest
+            framework: net10.0-maccatalyst
+
+    runs-on: ${{ matrix.os }}
+
+    env:
+      Solution_Path: SyrlasStudio/SyrlasStudio.sln
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET 10
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Install .NET MAUI Workload
+      run: dotnet workload install maui
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.Solution_Path }}
+
+    - name: Build and Publish MAUI App
+      run: dotnet publish ${{ env.Solution_Path }} -c Release -f ${{ matrix.framework }} --no-restore
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: SyrlasStudio-App-${{ matrix.os }}
+        path: |
+          SyrlasStudio/**/bin/Release/**/*.exe
+          SyrlasStudio/**/bin/Release/**/*.app
+          SyrlasStudio/**/bin/Release/**/*.pkg
+          SyrlasStudio/**/bin/Release/**/*.zip
