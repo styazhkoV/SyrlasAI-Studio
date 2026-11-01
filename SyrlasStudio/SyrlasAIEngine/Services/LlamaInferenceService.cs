@@ -82,15 +82,19 @@ public sealed class LlamaInferenceService : IDisposable
         }
     }
 
+    public IAsyncEnumerable<string> GenerateStreamAsync(
+        string userInput,
+        CancellationToken cancellationToken = default) =>
+        GenerateStreamAsync(userInput, GetInferenceParams(), cancellationToken);
+
     public async IAsyncEnumerable<string> GenerateStreamAsync(
-        string userInput, 
+        string userInput,
+        InferenceParams inferenceParams,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         await _semaphore.WaitAsync(cancellationToken);
         try
         {
-            var inferenceParams = GetInferenceParams();
-
             await foreach (var token in _chatSession.ChatAsync(
                 new ChatHistory.Message(AuthorRole.User, userInput),
                 inferenceParams))
