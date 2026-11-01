@@ -38,10 +38,8 @@ obj/
 *.msix
 *.msixupload
 *.msixbundle
-*.manifest
 *.cat
 *.p7x
-*.xml
 *.FileListAbsolute.txt
 
 # --- AI модели ---
