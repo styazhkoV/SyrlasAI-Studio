@@ -17,9 +17,7 @@ namespace SyrlasStudio.ViewModels;
 
 public class MainPageViewModel : INotifyPropertyChanged
 {
-    private readonly LlamaInferenceService _llamaService;
-    private readonly PromptFactory _promptFactory;
-    private readonly AgentService _agentService;
+    private readonly AgentService? _agentService;
     private readonly ResourceMonitorService? _resourceMonitor;
     private CancellationTokenSource? _cts;
 
@@ -27,6 +25,20 @@ public class MainPageViewModel : INotifyPropertyChanged
 
     public ObservableCollection<ChatMessage> Messages { get; } = new();
     public ObservableCollection<string> SystemLogs { get; } = new();
+
+    private string _modelStatusText = string.Empty;
+    public string ModelStatusText
+    {
+        get => _modelStatusText;
+        private set => SetProperty(ref _modelStatusText, value);
+    }
+
+    private bool _isModelMissing;
+    public bool IsModelMissing
+    {
+        get => _isModelMissing;
+        private set => SetProperty(ref _isModelMissing, value);
+    }
 
     private string _userInputText = string.Empty;
     public string UserInputText
@@ -144,12 +156,19 @@ public class MainPageViewModel : INotifyPropertyChanged
     {
         _resourceMonitor = resourceMonitor;
         AddLog("Инициализация Syrlas Studio Engine...");
-        _llamaService = new LlamaInferenceService();
-        AddLog("Модель успешно загружена в память.");
-        _promptFactory = new PromptFactory();
-        
-        // AgentService принимает LlamaInferenceService, PromptFactory и RagService[cite: 27]
-        _agentService = new AgentService(_llamaService, _promptFactory, null!);
+        try
+        {
+            var llamaService = new LlamaInferenceService();
+            var promptFactory = new PromptFactory();
+            _agentService = new AgentService(llamaService, promptFactory, null!);
+            AddLog("Модель успешно загружена в память.");
+        }
+        catch (FileNotFoundException ex)
+        {
+            IsModelMissing = true;
+            ModelStatusText = $"Модель не найдена: {ex.FileName}. Добавьте файл модели в bundle приложения и перезапустите его.";
+            AddLog(ModelStatusText);
+        }
 
         SendMessageCommand = new Command(async () => await SendMessageAsync());
         StopCommand = new Command(OnStop);
@@ -179,6 +198,18 @@ public class MainPageViewModel : INotifyPropertyChanged
     private async Task SendMessageAsync()
     {
         if (string.IsNullOrWhiteSpace(UserInputText) || IsGenerating) return;
+
+        if (_agentService is null)
+        {
+            Messages.Add(new ChatMessage
+            {
+                SenderName = "Syrlas AI Assistant",
+                Text = ModelStatusText,
+                IsUser = false
+            });
+            RequestScroll();
+            return;
+        }
 
         var userText = UserInputText;
         UserInputText = string.Empty;
